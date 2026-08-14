@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/converters</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/format-converters</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/blog</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/pricing</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/meters-to-feet</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/feet-to-meters</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/kg-to-lbs</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/celsius-to-fahrenheit</loc></url>
+  <url><loc>${VITE_SITE_URL:-https://convertkit.example}/liters-to-gallons</loc></url>
+</urlset>

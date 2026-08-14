@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /test
+Sitemap: ${VITE_SITE_URL:-https://convertkit.example}/sitemap.xml
