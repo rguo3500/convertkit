@@ -23,6 +23,12 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## Cloudflare 线上收尾
+- [ ] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
+- [ ] 让分析脚本仅在环境变量存在时注入，消除构建警告和无效 URL
+- [ ] 重新验证构建输出与线上 SEO 文件
+- [ ] 保存 Cloudflare 稳定版 checkpoint
+
 ## 真实生产域名同步
 - [ ] 将生产构建和部署文档统一为 `https://lovexiaoyue.cc.cd`
 - [ ] 验证线上首页、pair 页面、robots.txt 和 sitemap.xml

@@ -30,7 +30,7 @@ pnpm run deploy:cloudflare
 
 ## Routing and SEO
 
-`client/public/_redirects` 中的 `/* /index.html 200` 为 Wouter SPA 路由提供回退。发布后应检查以下地址：
+本项目不包含自定义 `_redirects` 规则；Cloudflare Pages 会在没有 `404.html` 的单页应用部署中将未知路径回退到 `index.html`。发布后应检查以下地址：
 
 ```text
 https://lovexiaoyue.cc.cd/
