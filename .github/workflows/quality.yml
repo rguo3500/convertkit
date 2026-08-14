@@ -31,5 +31,11 @@ jobs:
         run: pnpm run check
       - name: Build
         run: VITE_SITE_URL=https://convertkit.example pnpm run build
+      - name: Start preview server for accessibility audit
+        run: |
+          pnpm run dev -- --host 127.0.0.1 > /tmp/convertkit-vite.log 2>&1 &
+          for i in {1..30}; do curl --fail --silent http://127.0.0.1:3000/ >/dev/null && break; sleep 1; done
+      - name: axe accessibility audit
+        run: pnpm run audit:a11y
       - name: Lighthouse CI
         run: pnpm run audit

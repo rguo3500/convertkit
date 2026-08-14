@@ -23,6 +23,12 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 自动化质量保障
+- [x] 配置可执行的 axe 可访问性检查并覆盖主要路由
+- [x] 补充转换器输入、单位交换、复制、重置和格式工具交互测试
+- [x] 运行单元测试、交互测试、axe、类型检查、构建和 Lighthouse
+- [ ] 保存新的质量保障 checkpoint
+
 ## 生产体验优化
 - [x] 在生产文档与 README 中加入可直接复制的 Sitemap 提交 URL 和 Cloudflare Analytics 配置提示
 - [x] 检查主要页面输入、选择器和按钮的可访问名称、焦点顺序与键盘操作
