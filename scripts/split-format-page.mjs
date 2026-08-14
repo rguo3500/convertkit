@@ -1,0 +1,10 @@
+import { readFile, writeFile } from 'node:fs/promises';
+const path='client/src/pages/FormatPage.tsx';
+const text=await readFile(path,'utf8');
+const lines=text.split('\n');
+const head=lines.slice(0,9);
+const tail=lines.slice(15);
+const imports="import { executeFormat } from '../lib/format';";
+const output=[...head,imports,...tail].join('\n').replace(/execute\(type,input\)/g,'executeFormat(type,input)');
+await writeFile(path,output);
+console.log('FormatPage now imports shared format functions');

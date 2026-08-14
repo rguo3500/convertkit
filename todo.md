@@ -17,6 +17,12 @@
 - [x] 创建 Pricing UI 的 Free/Pro 对比与功能预留说明
 - [x] 为未来 ConversionService、API key、历史记录和自定义预设保留清晰接口边界
 
+## 新一轮完善
+- [x] 抽取格式工具纯函数并补充 JSON、Base64、URL、Unix 时间戳测试
+- [x] 加入 Lighthouse 与可访问性检查配置及可执行脚本
+- [x] 建立 conversion 数据源校验与生成说明，降低手工维护风险
+- [x] 运行完整测试、性能检查、类型检查和生产构建
+
 ## 本轮完善
 - [x] 将 conversion 配置从页面组件拆分为独立数据与计算模块
 - [x] 按路由拆分格式工具代码，降低首屏 JavaScript 体积
