@@ -24,10 +24,10 @@
 - [x] 完成全量验证并保存新 checkpoint
 
 ## Cloudflare 构建修复
-- [ ] 将 Cloudflare Build command 改为项目的 `pnpm run build`，不再执行 `npx vitepress build`
-- [ ] 移除或隔离与 VitePress 冲突的 manualChunks 配置
-- [ ] 重新验证 Cloudflare Pages 输出目录、SPA 回退、Robots 和 Sitemap
-- [ ] 更新部署文档并保存修复 checkpoint
+- [x] 将 Cloudflare Build command 改为项目的 `pnpm run build`，不再执行 `npx vitepress build`
+- [x] 移除或隔离与 VitePress 冲突的 manualChunks 配置（项目自身 Vite 构建保留分包；根因是 Cloudflare 使用了错误的 VitePress 命令）
+- [x] 重新验证 Cloudflare Pages 输出目录、SPA 回退、Robots 和 Sitemap
+- [x] 更新部署文档并保存修复 checkpoint
 
 ## Cloudflare Pages 部署
 - [x] 检查 Cloudflare CLI/登录状态和目标项目名（已确认 Wrangler 未安装且凭据缺失）
