@@ -2,8 +2,8 @@
   {
     "url": "http://localhost:4173/",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost--2026_08_14_13_14_32.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost--2026_08_14_13_14_32.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost--2026_08_14_13_24_32.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost--2026_08_14_13_24_32.report.json",
     "summary": {
       "performance": 0.63,
       "accessibility": 0.88,
@@ -14,8 +14,8 @@
   {
     "url": "http://localhost:4173/converters",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-converters-2026_08_14_13_14_56.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-converters-2026_08_14_13_14_56.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-converters-2026_08_14_13_24_55.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-converters-2026_08_14_13_24_55.report.json",
     "summary": {
       "performance": 0.71,
       "accessibility": 0.88,
@@ -26,10 +26,10 @@
   {
     "url": "http://localhost:4173/format-converters",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-format_converters-2026_08_14_13_15_10.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-format_converters-2026_08_14_13_15_10.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-format_converters-2026_08_14_13_25_10.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-format_converters-2026_08_14_13_25_10.report.json",
     "summary": {
-      "performance": 0.57,
+      "performance": 0.58,
       "accessibility": 0.87,
       "best-practices": 0.78,
       "seo": 1
@@ -38,8 +38,8 @@
   {
     "url": "http://localhost:4173/meters-to-feet",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-meters_to_feet-2026_08_14_13_15_31.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-meters_to_feet-2026_08_14_13_15_31.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-meters_to_feet-2026_08_14_13_25_31.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-meters_to_feet-2026_08_14_13_25_31.report.json",
     "summary": {
       "performance": 0.71,
       "accessibility": 0.88,
@@ -50,8 +50,8 @@
   {
     "url": "http://localhost:4173/bulk-converter",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-bulk_converter-2026_08_14_13_15_46.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-bulk_converter-2026_08_14_13_15_46.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-bulk_converter-2026_08_14_13_25_47.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-bulk_converter-2026_08_14_13_25_47.report.json",
     "summary": {
       "performance": 0.71,
       "accessibility": 0.88,
@@ -62,10 +62,10 @@
   {
     "url": "http://localhost:4173/pricing",
     "isRepresentativeRun": true,
-    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-pricing-2026_08_14_13_16_00.report.html",
-    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-pricing-2026_08_14_13_16_00.report.json",
+    "htmlPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-pricing-2026_08_14_13_26_01.report.html",
+    "jsonPath": "/home/ubuntu/convertkit/artifacts/lighthouse/localhost-pricing-2026_08_14_13_26_01.report.json",
     "summary": {
-      "performance": 0.72,
+      "performance": 0.71,
       "accessibility": 0.87,
       "best-practices": 0.78,
       "seo": 1

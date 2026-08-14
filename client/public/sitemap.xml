@@ -6,39 +6,39 @@
   <url><loc>https://convertkit.example/blog</loc></url>
   <url><loc>https://convertkit.example/pricing</loc></url>
   <url><loc>https://convertkit.example/bulk-converter</loc></url>
-  <url><loc>https://convertkit.example/converters/length</loc></url>
-  <url><loc>https://convertkit.example/converters/weight</loc></url>
-  <url><loc>https://convertkit.example/converters/temperature</loc></url>
-  <url><loc>https://convertkit.example/converters/area</loc></url>
-  <url><loc>https://convertkit.example/converters/volume</loc></url>
-  <url><loc>https://convertkit.example/converters/speed</loc></url>
-  <url><loc>https://convertkit.example/converters/time</loc></url>
-  <url><loc>https://convertkit.example/converters/data</loc></url>
   <url><loc>https://convertkit.example/meters-to-feet</loc></url>
+  <url><loc>https://convertkit.example/converters/length</loc></url>
   <url><loc>https://convertkit.example/feet-to-meters</loc></url>
   <url><loc>https://convertkit.example/inches-to-centimeters</loc></url>
   <url><loc>https://convertkit.example/centimeters-to-inches</loc></url>
   <url><loc>https://convertkit.example/kilometers-to-miles</loc></url>
   <url><loc>https://convertkit.example/miles-to-kilometers</loc></url>
   <url><loc>https://convertkit.example/kg-to-lbs</loc></url>
+  <url><loc>https://convertkit.example/converters/weight</loc></url>
   <url><loc>https://convertkit.example/lbs-to-kg</loc></url>
   <url><loc>https://convertkit.example/grams-to-ounces</loc></url>
   <url><loc>https://convertkit.example/ounces-to-grams</loc></url>
   <url><loc>https://convertkit.example/celsius-to-fahrenheit</loc></url>
+  <url><loc>https://convertkit.example/converters/temperature</loc></url>
   <url><loc>https://convertkit.example/fahrenheit-to-celsius</loc></url>
   <url><loc>https://convertkit.example/celsius-to-kelvin</loc></url>
   <url><loc>https://convertkit.example/square-meters-to-square-feet</loc></url>
+  <url><loc>https://convertkit.example/converters/area</loc></url>
   <url><loc>https://convertkit.example/square-feet-to-square-meters</loc></url>
   <url><loc>https://convertkit.example/acres-to-square-meters</loc></url>
   <url><loc>https://convertkit.example/liters-to-gallons</loc></url>
+  <url><loc>https://convertkit.example/converters/volume</loc></url>
   <url><loc>https://convertkit.example/gallons-to-liters</loc></url>
   <url><loc>https://convertkit.example/milliliters-to-ounces</loc></url>
   <url><loc>https://convertkit.example/kmh-to-mph</loc></url>
+  <url><loc>https://convertkit.example/converters/speed</loc></url>
   <url><loc>https://convertkit.example/mph-to-kmh</loc></url>
   <url><loc>https://convertkit.example/seconds-to-minutes</loc></url>
+  <url><loc>https://convertkit.example/converters/time</loc></url>
   <url><loc>https://convertkit.example/minutes-to-hours</loc></url>
   <url><loc>https://convertkit.example/hours-to-days</loc></url>
   <url><loc>https://convertkit.example/bytes-to-kb</loc></url>
+  <url><loc>https://convertkit.example/converters/data</loc></url>
   <url><loc>https://convertkit.example/mb-to-gb</loc></url>
   <url><loc>https://convertkit.example/gb-to-tb</loc></url>
   <url><loc>https://convertkit.example/json-formatter</loc></url>

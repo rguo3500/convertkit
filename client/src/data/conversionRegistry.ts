@@ -1,0 +1,166 @@
+/* Generated from data/conversion-pairs.json. Do not edit manually. */
+export const conversionRegistry = [
+  {
+    "slug": "meters-to-feet",
+    "category": "length",
+    "from": "m",
+    "to": "ft"
+  },
+  {
+    "slug": "feet-to-meters",
+    "category": "length",
+    "from": "ft",
+    "to": "m"
+  },
+  {
+    "slug": "inches-to-centimeters",
+    "category": "length",
+    "from": "in",
+    "to": "cm"
+  },
+  {
+    "slug": "centimeters-to-inches",
+    "category": "length",
+    "from": "cm",
+    "to": "in"
+  },
+  {
+    "slug": "kilometers-to-miles",
+    "category": "length",
+    "from": "km",
+    "to": "mi"
+  },
+  {
+    "slug": "miles-to-kilometers",
+    "category": "length",
+    "from": "mi",
+    "to": "km"
+  },
+  {
+    "slug": "kg-to-lbs",
+    "category": "weight",
+    "from": "kg",
+    "to": "lb"
+  },
+  {
+    "slug": "lbs-to-kg",
+    "category": "weight",
+    "from": "lb",
+    "to": "kg"
+  },
+  {
+    "slug": "grams-to-ounces",
+    "category": "weight",
+    "from": "g",
+    "to": "oz"
+  },
+  {
+    "slug": "ounces-to-grams",
+    "category": "weight",
+    "from": "oz",
+    "to": "g"
+  },
+  {
+    "slug": "celsius-to-fahrenheit",
+    "category": "temperature",
+    "from": "c",
+    "to": "f"
+  },
+  {
+    "slug": "fahrenheit-to-celsius",
+    "category": "temperature",
+    "from": "f",
+    "to": "c"
+  },
+  {
+    "slug": "celsius-to-kelvin",
+    "category": "temperature",
+    "from": "c",
+    "to": "k"
+  },
+  {
+    "slug": "square-meters-to-square-feet",
+    "category": "area",
+    "from": "sqm",
+    "to": "sqft"
+  },
+  {
+    "slug": "square-feet-to-square-meters",
+    "category": "area",
+    "from": "sqft",
+    "to": "sqm"
+  },
+  {
+    "slug": "acres-to-square-meters",
+    "category": "area",
+    "from": "acre",
+    "to": "sqm"
+  },
+  {
+    "slug": "liters-to-gallons",
+    "category": "volume",
+    "from": "l",
+    "to": "gal"
+  },
+  {
+    "slug": "gallons-to-liters",
+    "category": "volume",
+    "from": "gal",
+    "to": "l"
+  },
+  {
+    "slug": "milliliters-to-ounces",
+    "category": "volume",
+    "from": "ml",
+    "to": "floz"
+  },
+  {
+    "slug": "kmh-to-mph",
+    "category": "speed",
+    "from": "kmh",
+    "to": "mph"
+  },
+  {
+    "slug": "mph-to-kmh",
+    "category": "speed",
+    "from": "mph",
+    "to": "kmh"
+  },
+  {
+    "slug": "seconds-to-minutes",
+    "category": "time",
+    "from": "sec",
+    "to": "min"
+  },
+  {
+    "slug": "minutes-to-hours",
+    "category": "time",
+    "from": "min",
+    "to": "hr"
+  },
+  {
+    "slug": "hours-to-days",
+    "category": "time",
+    "from": "hr",
+    "to": "day"
+  },
+  {
+    "slug": "bytes-to-kb",
+    "category": "data",
+    "from": "byte",
+    "to": "kb"
+  },
+  {
+    "slug": "mb-to-gb",
+    "category": "data",
+    "from": "mb",
+    "to": "gb"
+  },
+  {
+    "slug": "gb-to-tb",
+    "category": "data",
+    "from": "gb",
+    "to": "tb"
+  }
+] as const;
+export const conversionSlugs = new Set(conversionRegistry.map(pair => pair.slug));

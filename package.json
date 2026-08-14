@@ -4,8 +4,9 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "predev": "node scripts/generate-conversion-registry.mjs",
     "dev": "vite --host",
-    "prebuild": "node scripts/generate-seo.mjs",
+    "prebuild": "node scripts/generate-conversion-registry.mjs && node scripts/generate-seo.mjs",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "preview": "vite preview --host",

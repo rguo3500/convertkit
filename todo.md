@@ -17,6 +17,13 @@
 - [x] 创建 Pricing UI 的 Free/Pro 对比与功能预留说明
 - [x] 为未来 ConversionService、API key、历史记录和自定义预设保留清晰接口边界
 
+## 最新一轮完善
+- [x] 用 conversion-pairs.json 生成运行时/构建时可消费的 pair registry
+- [x] 让 Sitemap、SEO metadata 和动态 pair 路由复用同一 registry
+- [x] 添加 GitHub Actions CI，执行测试、数据校验、类型检查、构建和 Lighthouse
+- [x] 针对生产构建优化首屏包、字体加载和第三方脚本
+- [x] 完成全量验证并保存新 checkpoint
+
 ## 新一轮完善
 - [x] 抽取格式工具纯函数并补充 JSON、Base64、URL、Unix 时间戳测试
 - [x] 加入 Lighthouse 与可访问性检查配置及可执行脚本
