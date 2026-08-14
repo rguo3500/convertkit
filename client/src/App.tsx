@@ -6,8 +6,11 @@ import Home from './pages/Home';
 import ConverterPage from './pages/ConverterPage';
 const FormatPage = lazy(() => import('./pages/FormatPage'));
 import SEO from './components/SEO';
-import { CategoryPage, BlogPage, BlogArticle } from './pages/ContentPages';
-import { BulkPage, PricingPage } from './pages/ProPages';
+const CategoryPage = lazy(() => import('./pages/ContentPages').then(module => ({ default: module.CategoryPage })));
+const BlogPage = lazy(() => import('./pages/ContentPages').then(module => ({ default: module.BlogPage })));
+const BlogArticle = lazy(() => import('./pages/ContentPages').then(module => ({ default: module.BlogArticle })));
+const BulkPage = lazy(() => import('./pages/ProPages').then(module => ({ default: module.BulkPage })));
+const PricingPage = lazy(() => import('./pages/ProPages').then(module => ({ default: module.PricingPage })));
 import { conversionSlugs } from './data/conversionRegistry';
 
 const navItems = [

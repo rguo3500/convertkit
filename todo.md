@@ -18,6 +18,12 @@
 - [x] 为未来 ConversionService、API key、历史记录和自定义预设保留清晰接口边界
 
 ## 最新一轮完善
+- [x] 增加 CI 状态徽章、贡献说明和分支保护操作文档
+- [x] 为内容页与首屏非必要模块增加路由级懒加载，继续拆分入口依赖
+- [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
+- [x] 完成全量验证并保存新 checkpoint
+
+## 最新一轮完善
 - [x] 用 conversion-pairs.json 生成运行时/构建时可消费的 pair registry
 - [x] 让 Sitemap、SEO metadata 和动态 pair 路由复用同一 registry
 - [x] 添加 GitHub Actions CI，执行测试、数据校验、类型检查、构建和 Lighthouse
