@@ -24,10 +24,10 @@
 - [x] 完成全量验证并保存新 checkpoint
 
 ## 当前完善
-- [ ] 用实际 GitHub 仓库路径替换文档和 CI 徽章中的占位值
-- [ ] 增加生产环境 Lighthouse 基线与结果记录模板
-- [ ] 优化首屏 CSS 注入、字体请求和分析脚本加载
-- [ ] 完成全量验证并保存新 checkpoint
+- [x] 用实际 GitHub 仓库路径替换文档和 CI 徽章中的占位值
+- [x] 增加生产环境 Lighthouse 基线与结果记录模板
+- [x] 优化首屏 CSS 注入、字体请求和分析脚本加载
+- [x] 完成全量验证并保存新 checkpoint
 
 ## 最新一轮完善
 - [x] 用 conversion-pairs.json 生成运行时/构建时可消费的 pair registry
