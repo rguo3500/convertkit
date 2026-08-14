@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 生产体验优化
+- [x] 在生产文档与 README 中加入可直接复制的 Sitemap 提交 URL 和 Cloudflare Analytics 配置提示
+- [x] 检查主要页面输入、选择器和按钮的可访问名称、焦点顺序与键盘操作
+- [x] 优化低对比度的辅助文字、边框和焦点状态
+- [x] 重新运行测试、类型检查、构建和 Lighthouse（本地测试/构建已通过；生产 Lighthouse 待部署后重跑）
+- [ ] 保存新的生产体验 checkpoint
+
 ## 生产运营完善
 - [x] 新增 Sitemap 提交清单和 Search Console/Bing Webmaster 操作说明
 - [x] 补充 Cloudflare Analytics 与 Web Vitals 观测说明和环境变量配置
