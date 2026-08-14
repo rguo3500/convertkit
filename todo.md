@@ -23,6 +23,12 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 生产运营完善
+- [ ] 新增 Sitemap 提交清单和 Search Console/Bing Webmaster 操作说明
+- [ ] 补充 Cloudflare Analytics 与 Web Vitals 观测说明和环境变量配置
+- [ ] 对真实域名运行 Lighthouse，记录 Performance、Accessibility、SEO 与 Best Practices
+- [ ] 更新生产文档并保存新 checkpoint
+
 ## Cloudflare 线上收尾
 - [x] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
 - [x] 让分析脚本仅在环境变量存在时注入，消除构建警告和无效 URL
