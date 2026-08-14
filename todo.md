@@ -27,12 +27,12 @@
 - [x] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
 - [x] 让分析脚本仅在环境变量存在时注入，消除构建警告和无效 URL
 - [x] 重新验证构建输出与线上 SEO 文件（本地构建已验证；线上待重新部署后复核）
-- [ ] 保存 Cloudflare 稳定版 checkpoint
+- [x] 保存 Cloudflare 稳定版 checkpoint
 
 ## 真实生产域名同步
-- [ ] 将生产构建和部署文档统一为 `https://lovexiaoyue.cc.cd`
-- [ ] 验证线上首页、pair 页面、robots.txt 和 sitemap.xml
-- [ ] 保存域名同步后的 checkpoint
+- [x] 将生产构建和部署文档统一为 `https://lovexiaoyue.cc.cd`
+- [x] 验证线上首页、pair 页面、robots.txt 和 sitemap.xml
+- [x] 保存域名同步后的 checkpoint
 
 ## Cloudflare 构建修复
 - [x] 将 Cloudflare Build command 改为项目的 `pnpm run build`，不再执行 `npx vitepress build`
