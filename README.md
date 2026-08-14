@@ -25,4 +25,4 @@ GitHub Actions 工作流会执行 conversion 数据校验、单元测试、类�
 
 ## 生产域名
 
-生产构建必须设置 `VITE_SITE_URL`。部署说明、Sitemap 提交和域名替换步骤见 [`docs/production-seo.md`](./docs/production-seo.md)。
+生产构建必须设置 `VITE_SITE_URL`。部署说明、Sitemap 提交和域名替换步骤见 [`docs/production-seo.md`](./docs/production-seo.md)。Cloudflare Pages 的 Git 集成、Wrangler 发布和 SPA 回退说明见 [`docs/cloudflare-pages.md`](./docs/cloudflare-pages.md)。

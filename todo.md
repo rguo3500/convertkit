@@ -23,6 +23,12 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## Cloudflare Pages 部署
+- [x] 检查 Cloudflare CLI/登录状态和目标项目名（已确认 Wrangler 未安装且凭据缺失）
+- [x] 添加 Cloudflare Pages 构建配置与部署文档
+- [x] 验证 `dist/public` 静态产物、SPA 回退和 VITE_SITE_URL
+- [x] 在具备 Cloudflare 凭据时完成部署，否则交付可复制的发布步骤
+
 ## 当前完善
 - [x] 用实际 GitHub 仓库路径替换文档和 CI 徽章中的占位值
 - [x] 增加生产环境 Lighthouse 基线与结果记录模板

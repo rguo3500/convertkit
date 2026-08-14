@@ -14,6 +14,7 @@
     "test": "vitest run",
     "audit": "pnpm dlx @lhci/cli autorun",
     "validate:conversions": "node scripts/validate-conversions.mjs",
+    "deploy:cloudflare": "pnpm run build && pnpm dlx wrangler pages deploy dist/public --project-name convertkit",
     "format": "prettier --write ."
   },
   "dependencies": {

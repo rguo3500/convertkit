@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api
 Disallow: /test
-Sitemap: https://convertkit.example/sitemap.xml
+Sitemap: https://your-real-domain.example/sitemap.xml
