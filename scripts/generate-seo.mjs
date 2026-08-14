@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-const siteUrl = (process.env.VITE_SITE_URL || 'https://convertkit.example').replace(/\/$/, '');
+const siteUrl = (process.env.VITE_SITE_URL || 'https://lovexiaoyue.cc.cd').replace(/\/$/, '');
 const pairs = JSON.parse(await readFile('data/conversion-pairs.json', 'utf8'));
 const staticPages = [
   '/', '/converters', '/format-converters', '/blog', '/pricing', '/bulk-converter',

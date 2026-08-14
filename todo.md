@@ -23,6 +23,11 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 真实生产域名同步
+- [ ] 将生产构建和部署文档统一为 `https://lovexiaoyue.cc.cd`
+- [ ] 验证线上首页、pair 页面、robots.txt 和 sitemap.xml
+- [ ] 保存域名同步后的 checkpoint
+
 ## Cloudflare 构建修复
 - [x] 将 Cloudflare Build command 改为项目的 `pnpm run build`，不再执行 `npx vitepress build`
 - [x] 移除或隔离与 VitePress 冲突的 manualChunks 配置（项目自身 Vite 构建保留分包；根因是 Cloudflare 使用了错误的 VitePress 命令）
