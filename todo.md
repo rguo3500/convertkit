@@ -17,7 +17,13 @@
 - [x] 创建 Pricing UI 的 Free/Pro 对比与功能预留说明
 - [x] 为未来 ConversionService、API key、历史记录和自定义预设保留清晰接口边界
 
+## 下一轮完善
+- [x] 将 Sitemap 与 Robots 改为部署时可配置的生成方式
+- [x] 扩展更多真实 conversion pair 页面，并集中配置 metadata、公式、示例和相关工具
+- [x] 增加文件上传、转换历史与 Pro 订阅的清晰功能边界和占位交互
+- [x] 为新页面增加测试样例与移动端验证
+
 ## 验证与交付
 - [x] 运行类型检查与生产构建
 - [x] 验证首页、SEO 页面、博客、批量转换、Pro 页面和移动端截图
-- [ ] 保存新的可交付 checkpoint
+- [x] 保存新的可交付 checkpoint
