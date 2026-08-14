@@ -24,10 +24,10 @@
 - [x] 完成全量验证并保存新 checkpoint
 
 ## 生产运营完善
-- [ ] 新增 Sitemap 提交清单和 Search Console/Bing Webmaster 操作说明
-- [ ] 补充 Cloudflare Analytics 与 Web Vitals 观测说明和环境变量配置
-- [ ] 对真实域名运行 Lighthouse，记录 Performance、Accessibility、SEO 与 Best Practices
-- [ ] 更新生产文档并保存新 checkpoint
+- [x] 新增 Sitemap 提交清单和 Search Console/Bing Webmaster 操作说明
+- [x] 补充 Cloudflare Analytics 与 Web Vitals 观测说明和环境变量配置
+- [x] 对真实域名运行 Lighthouse，记录 Performance、Accessibility、SEO 与 Best Practices
+- [x] 更新生产文档并保存新 checkpoint
 
 ## Cloudflare 线上收尾
 - [x] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
