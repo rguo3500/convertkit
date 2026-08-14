@@ -1,6 +1,6 @@
 # ConvertKit
 
-[![ConvertKit quality](https://github.com/OWNER/convertkit/actions/workflows/quality.yml/badge.svg)](https://github.com/OWNER/convertkit/actions/workflows/quality.yml)
+[![ConvertKit quality](https://github.com/rguo3500/convertkit/actions/workflows/quality.yml/badge.svg)](https://github.com/rguo3500/convertkit/actions/workflows/quality.yml)
 
 ConvertKit 是一个采用 Signal Workshop 视觉系统的浏览器本地单位与格式转换工具集。普通输入尽可能只在浏览器中处理，不要求账号，也不上传转换内容。
 
