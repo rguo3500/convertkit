@@ -17,6 +17,12 @@
 - [x] 创建 Pricing UI 的 Free/Pro 对比与功能预留说明
 - [x] 为未来 ConversionService、API key、历史记录和自定义预设保留清晰接口边界
 
+## 本轮完善
+- [x] 将 conversion 配置从页面组件拆分为独立数据与计算模块
+- [x] 按路由拆分格式工具代码，降低首屏 JavaScript 体积
+- [x] 为长度、重量、温度和 CSV 批量转换补充单元测试
+- [x] 运行测试、类型检查、生产构建并检查产物体积
+
 ## 下一轮完善
 - [x] 将 Sitemap 与 Robots 改为部署时可配置的生成方式
 - [x] 扩展更多真实 conversion pair 页面，并集中配置 metadata、公式、示例和相关工具
