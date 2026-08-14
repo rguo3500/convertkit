@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api
 Disallow: /test
-Sitemap: https://your-real-domain.example/sitemap.xml
+Sitemap: https://lovexiaoyue.cc.cd/sitemap.xml

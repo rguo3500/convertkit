@@ -24,9 +24,9 @@
 - [x] 完成全量验证并保存新 checkpoint
 
 ## Cloudflare 线上收尾
-- [ ] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
-- [ ] 让分析脚本仅在环境变量存在时注入，消除构建警告和无效 URL
-- [ ] 重新验证构建输出与线上 SEO 文件
+- [x] 移除会被 Cloudflare 忽略的 `/* /index.html 200` 重定向规则，依赖 Pages SPA fallback
+- [x] 让分析脚本仅在环境变量存在时注入，消除构建警告和无效 URL
+- [x] 重新验证构建输出与线上 SEO 文件（本地构建已验证；线上待重新部署后复核）
 - [ ] 保存 Cloudflare 稳定版 checkpoint
 
 ## 真实生产域名同步
