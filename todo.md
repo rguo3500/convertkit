@@ -28,7 +28,7 @@
 - [x] 检查主要页面输入、选择器和按钮的可访问名称、焦点顺序与键盘操作
 - [x] 优化低对比度的辅助文字、边框和焦点状态
 - [x] 重新运行测试、类型检查、构建和 Lighthouse（本地测试/构建已通过；生产 Lighthouse 待部署后重跑）
-- [ ] 保存新的生产体验 checkpoint
+- [x] 保存新的生产体验 checkpoint
 
 ## 生产运营完善
 - [x] 新增 Sitemap 提交清单和 Search Console/Bing Webmaster 操作说明

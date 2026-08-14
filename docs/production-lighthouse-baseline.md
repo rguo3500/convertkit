@@ -15,3 +15,15 @@
 真实生产环境的 SEO 分类均为 1.00；首页和单位详情页 Performance 为 0.76，格式工具、批量转换和 Pricing 约为 0.70–0.71。可访问性为 0.87–0.89，后续可优先检查表单标签、颜色对比与键盘焦点。Best Practices 为 0.81，建议在 Cloudflare Analytics 的真实设备数据积累后再判断是否需要针对性优化。
 
 下一次发布后，使用相同页面集合重新运行 Lighthouse，并重点比较 Performance、Accessibility 和 Core Web Vitals，而不要只比较单次实验室分数。
+
+## Follow-up audit after accessibility release
+
+第二次审计时间：2026-08-14，确认线上 CSS 已包含可访问性焦点色 `#5f8dff`，说明提交 84bd53a 已部署。由于 Lighthouse 实验室网络和缓存波动，Performance 分数不作为单次回归结论；Accessibility、SEO 和 Best Practices 仍保持稳定。
+
+| 页面 | Performance | Accessibility | Best Practices | SEO |
+| --- | ---: | ---: | ---: | ---: |
+| `/` | 0.69 | 0.88 | 0.81 | 1.00 |
+| `/meters-to-feet` | 0.79 | 0.89 | 0.81 | 1.00 |
+| `/format-converters` | 0.75 | 0.87 | 0.81 | 1.00 |
+| `/bulk-converter` | 0.52 | 0.89 | 0.81 | 1.00 |
+| `/pricing` | 0.63 | 0.87 | 0.81 | 1.00 |
