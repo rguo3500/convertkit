@@ -23,6 +23,12 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## Cloudflare 构建修复
+- [ ] 将 Cloudflare Build command 改为项目的 `pnpm run build`，不再执行 `npx vitepress build`
+- [ ] 移除或隔离与 VitePress 冲突的 manualChunks 配置
+- [ ] 重新验证 Cloudflare Pages 输出目录、SPA 回退、Robots 和 Sitemap
+- [ ] 更新部署文档并保存修复 checkpoint
+
 ## Cloudflare Pages 部署
 - [x] 检查 Cloudflare CLI/登录状态和目标项目名（已确认 Wrangler 未安装且凭据缺失）
 - [x] 添加 Cloudflare Pages 构建配置与部署文档
