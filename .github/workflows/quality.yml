@@ -30,11 +30,27 @@ jobs:
       - name: Validate conversion data
         run: pnpm run validate:conversions
       - name: Run unit tests
-        run: pnpm run test
+        shell: bash
+        run: |
+          start=$(date +%s)
+          set +e
+          pnpm run test 2>&1 | tee /tmp/convertkit-test.log
+          status=${PIPESTATUS[0]}
+          end=$(date +%s)
+          echo "test_duration=$((end-start))s" > /tmp/convertkit-timing.log
+          exit "$status"
       - name: Typecheck
         run: pnpm run check
       - name: Build
-        run: VITE_SITE_URL=https://convertkit.example pnpm run build
+        shell: bash
+        run: |
+          start=$(date +%s)
+          set +e
+          VITE_SITE_URL=https://convertkit.example pnpm run build 2>&1 | tee /tmp/convertkit-build.log
+          status=${PIPESTATUS[0]}
+          end=$(date +%s)
+          echo "build_duration=$((end-start))s" >> /tmp/convertkit-timing.log
+          exit "$status"
       - name: Start preview server for accessibility audit
         run: |
           pnpm run dev -- --host 127.0.0.1 > /tmp/convertkit-vite.log 2>&1 &
@@ -72,6 +88,17 @@ jobs:
               http://127.0.0.1:3000/ || true
           fi
 
+      - name: Create quality summary
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts/summary
+          {
+            echo "job_status=${{ job.status }}"
+            if [ -f /tmp/convertkit-test.log ]; then grep -E 'Tests +[0-9]+ passed|Test Files +[0-9]+ passed' /tmp/convertkit-test.log || true; fi
+            if [ -f /tmp/convertkit-timing.log ]; then cat /tmp/convertkit-timing.log; fi
+          } > artifacts/summary/quality-summary.txt
+
       - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,19 +108,26 @@ jobs:
             artifacts/axe/ci/
             artifacts/lighthouse/
             artifacts/failures/
+            artifacts/summary/
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Comment failure summary on Pull Request
-        if: failure() && github.event_name == 'pull_request'
+      - name: Comment quality summary on Pull Request
+        if: always() && github.event_name == 'pull_request'
         continue-on-error: true
         uses: actions/github-script@v7
+        env:
+          JOB_STATUS: ${{ job.status }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const fs = require('fs');
             const marker = '<!-- convertkit-quality-summary -->';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = `${marker}\n## ConvertKit quality check failed\n\nThe workflow detected a failure on commit ${context.sha.slice(0, 7)}. Download the diagnostic bundle and inspect the failed step from the [workflow run](${runUrl}).\n\n- Quality reports artifact: convertkit-quality-reports-${context.runId}\n- Failure diagnostics include HTML, response headers, Vite logs, and a browser screenshot when available\n- This comment is updated on subsequent runs for the same Pull Request`;
+            const status = process.env.JOB_STATUS === 'success' ? 'passed' : 'failed';
+            const summaryPath = 'artifacts/summary/quality-summary.txt';
+            const summary = fs.existsSync(summaryPath) ? fs.readFileSync(summaryPath, 'utf8').trim() : 'Summary unavailable';
+            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,

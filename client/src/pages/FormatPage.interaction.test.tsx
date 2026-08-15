@@ -77,6 +77,20 @@ describe("format tool interactions", () => {
     );
   });
 
+  it("reports column types and invalid values before download", async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const csvInput = screen.getByRole("textbox", { name: "CSV text" });
+    await user.clear(csvInput);
+    fireEvent.change(csvInput, {
+      target: { value: "meters,kilograms\n2,not-a-number\n,4" },
+    });
+    expect(screen.getByText("Mixed")).toBeTruthy();
+    expect(screen.getByText(/1 valid · 1 invalid/)).toBeTruthy();
+    expect(screen.getByText(/1 valid · 0 invalid · 1 empty/)).toBeTruthy();
+    expect(screen.getByText("1 invalid values will remain blank")).toBeTruthy();
+  });
+
   it("imports a CSV file and exposes the converted download action", async () => {
     const user = userEvent.setup();
     const clickSpy = vi

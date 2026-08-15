@@ -51,12 +51,32 @@ export function BulkPage() {
       )
     );
   }, [parsed.headers, pair]);
+  const columnStats = useMemo(
+    () =>
+      parsed.headers.map((header, index) => {
+        const values = parsed.rows.map(row => (row[index] ?? "").trim());
+        const nonEmpty = values.filter(Boolean);
+        const valid = nonEmpty.filter(value =>
+          Number.isFinite(Number(value))
+        ).length;
+        const invalid = nonEmpty.length - valid;
+        const empty = values.length - nonEmpty.length;
+        const type =
+          valid > 0 && invalid === 0 ? "Numeric" : valid > 0 ? "Mixed" : "Text";
+        return { header, valid, invalid, empty, type };
+      }),
+    [parsed]
+  );
   const activeMappings = useMemo(
     () =>
       mappings
         .map((mapping, index) => ({ ...mapping, index }))
         .filter(mapping => mapping.enabled && parsed.headers[mapping.index]),
     [mappings, parsed.headers]
+  );
+  const totalInvalid = columnStats.reduce(
+    (sum, stats) => sum + stats.invalid,
+    0
   );
   const result = useMemo(() => {
     if (!parsed.headers.length) return "";
@@ -284,10 +304,11 @@ export function BulkPage() {
                   pair,
                   outputName: `${header} (${unitOptions[pair][3]})`,
                 };
+                const stats = columnStats[index];
                 return (
                   <div
                     key={`${header}-${index}`}
-                    className="grid gap-3 border border-[#dbe1eb] bg-[#fbfcfe] p-3 sm:grid-cols-[auto_1fr_1fr]"
+                    className="grid gap-3 border border-[#dbe1eb] bg-[#fbfcfe] p-3 sm:grid-cols-[auto_1fr_1fr_auto]"
                   >
                     <label className="flex items-center gap-2 text-xs font-semibold text-[#172033]">
                       <input
@@ -325,10 +346,38 @@ export function BulkPage() {
                       className="border border-[#dbe1eb] bg-white px-3 py-2 text-xs outline-none focus:border-[#1d56c9]"
                       placeholder="Custom output column name"
                     />
+                    <div className="flex items-center justify-between gap-3 border-t border-[#dbe1eb] pt-2 text-[10px] font-normal text-[#647087] sm:block sm:border-t-0 sm:border-l sm:pl-3 sm:pt-0">
+                      <span className="font-mono uppercase tracking-[.12em] text-[#1d56c9]">
+                        {stats.type}
+                      </span>
+                      <span className="sm:mt-1 sm:block">
+                        {stats.valid} valid · {stats.invalid} invalid
+                        {stats.empty ? ` · ${stats.empty} empty` : ""}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+          <div
+            className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#dbe1eb] pt-4 text-xs text-[#536276]"
+            role="status"
+            aria-live="polite"
+          >
+            <span>
+              {parsed.rows.length} data rows · {parsed.headers.length} columns ·{" "}
+              {activeMappings.length} mapped
+            </span>
+            <span
+              className={
+                totalInvalid ? "font-semibold text-[#a34d19]" : "text-[#18866b]"
+              }
+            >
+              {totalInvalid
+                ? `${totalInvalid} invalid values will remain blank`
+                : "All mapped values are numeric"}
+            </span>
           </div>
           <button
             onClick={download}
