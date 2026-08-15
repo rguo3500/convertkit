@@ -27,3 +27,18 @@
 | `/format-converters` | 0.75 | 0.87 | 0.81 | 1.00 |
 | `/bulk-converter` | 0.52 | 0.89 | 0.81 | 1.00 |
 | `/pricing` | 0.63 | 0.87 | 0.81 | 1.00 |
+
+
+## 2026-08-15 生产复测
+
+最新提交 `e268a6b` 已推送到 GitHub main，生产域名复测结果如下：
+
+| 页面 | Performance | Accessibility | Best Practices | SEO |
+|---|---:|---:|---:|---:|
+| 首页 | 0.76 | 1.00 | 0.81 | 1.00 |
+| Meters to Feet | 0.83 | 1.00 | 0.81 | 1.00 |
+| Format converters | 0.72 | 1.00 | 0.81 | 1.00 |
+| Bulk converter | 0.74 | 1.00 | 0.81 | 1.00 |
+| Pricing | 0.75 | 1.00 | 0.81 | 1.00 |
+
+本轮复测重点验证了格式工具交互测试新增后的生产页面未发生回归，并确认可访问性改动已在线生效。GitHub main 当前短 SHA 为 `e268a6b`；首页、`robots.txt` 和 `sitemap.xml` 均返回 HTTP 200。

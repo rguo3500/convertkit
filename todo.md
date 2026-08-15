@@ -24,11 +24,11 @@
 - [x] 完成全量验证并保存新 checkpoint
 
 ## 本轮质量与发布完善
-- [ ] 补充格式工具 JSON、Base64、URL、时间戳页面的交互测试
-- [ ] 补充格式工具文件导入与下载流程测试
-- [ ] 确认 Cloudflare 已部署 GitHub main 最新提交
-- [ ] 重跑真实生产 Lighthouse 并更新基线
-- [ ] 保存新的质量保障 checkpoint
+- [x] 补充格式工具 JSON、Base64、URL、时间戳页面的交互测试
+- [x] 补充格式工具文件导入与下载流程测试
+- [x] 确认 Cloudflare 已部署 GitHub main 最新提交（GitHub main=e268a6b，线上核心资源 HTTP 200）
+- [x] 重跑真实生产 Lighthouse 并更新基线
+- [x] 保存新的质量保障 checkpoint
 
 ## 自动化质量保障
 - [x] 配置可执行的 axe 可访问性检查并覆盖主要路由
