@@ -39,3 +39,13 @@ jobs:
         run: pnpm run audit:a11y
       - name: Lighthouse CI
         run: pnpm run audit
+      - name: Upload accessibility and Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: convertkit-quality-reports-${{ github.run_id }}
+          path: |
+            artifacts/axe/ci/
+            artifacts/lighthouse/
+          if-no-files-found: warn
+          retention-days: 14

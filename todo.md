@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮质量与发布完善
+- [x] 确认 Cloudflare 线上资源对应最新提交 21a0ceb
+- [x] 补充 JSON、XML、Base64、URL、时间戳的错误输入测试
+- [x] 补充空 CSV、超大 CSV 和 CSV 特殊字符边界测试
+- [x] 将 axe 与 Lighthouse 报告作为 GitHub Actions artifact 上传
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 本轮质量与发布完善
 - [x] 补充格式工具 JSON、Base64、URL、时间戳页面的交互测试
 - [x] 补充格式工具文件导入与下载流程测试

@@ -26,4 +26,10 @@ describe('format transformations', () => {
     expect(executeFormat('unix-timestamp-converter','0')).toBe('1970-01-01T00:00:00.000Z');
     expect(executeFormat('unix-timestamp-converter','not-a-time')).toBe('Invalid timestamp');
   });
+  it('returns readable errors for malformed JSON, XML, Base64, and URL input', () => {
+    expect(executeFormat('json-to-xml', '{broken')).toContain('Could not process');
+    expect(executeFormat('xml-to-json', '<root>')).toBe('<root>');
+    expect(executeFormat('base64-decoder', '%%%')).toContain('Could not process');
+    expect(executeFormat('url-decoder', '%E0%A4%A')).toContain('Could not process');
+  });
 });
