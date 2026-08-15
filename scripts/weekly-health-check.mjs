@@ -108,6 +108,12 @@ const robotsHasSitemap = robots?.body.includes(`${site}/sitemap.xml`) ?? false;
 const allHttpOk = checks.every(item => item.ok);
 const seoOk = sitemapHasProductionHost && robotsHasSitemap;
 const rumNeedsReview = rumFreshness === "STALE_OR_INVALID";
+const rumStatusTone =
+  rumFreshness === "FRESH"
+    ? "GREEN"
+    : rumFreshness === "STALE_OR_INVALID"
+      ? "AMBER"
+      : "NEUTRAL";
 const overall = allHttpOk && seoOk && !rumNeedsReview ? "PASS" : "REVIEW";
 
 const lines = [
@@ -138,11 +144,12 @@ const lines = [
     : "| Status | Source | Reporting window (UTC) | Collected at (UTC) | Age |",
   "| --- | --- | --- | --- | ---: |",
   rumMetrics
-    ? `| **${rumFreshness}** | Cloudflare Web Analytics | ${rumMetrics.windowStart || "n/a"} → ${rumMetrics.windowEnd || "n/a"} | ${rumMetrics.collectedAt || "n/a"} | ${rumMetrics.ageDays ?? "n/a"} days |`
-    : "| **NOT_CONFIGURED** | Cloudflare Web Analytics | n/a | n/a | n/a |",
+    ? `| **${rumFreshness} · ${rumStatusTone}** | Cloudflare Web Analytics | ${rumMetrics.windowStart || "n/a"} → ${rumMetrics.windowEnd || "n/a"} | ${rumMetrics.collectedAt || "n/a"} | ${rumMetrics.ageDays ?? "n/a"} days |`
+    : "| **NOT_CONFIGURED · NEUTRAL** | Cloudflare Web Analytics | n/a | n/a | n/a |",
   rumMetrics
     ? `- Source: **Cloudflare Web Analytics** (provided by the configured RUM exporter)`
     : "- Status: **Not configured** — set `CLOUDFLARE_RUM_METRICS_JSON` in the scheduled workflow to include verified RUM data.",
+  `- Thresholds: **GREEN/FRESH** means valid data collected within ${rumMaxAgeDays} days; **AMBER/STALE_OR_INVALID** means expired or invalid time metadata; **NEUTRAL/NOT_CONFIGURED** means no verified RUM payload was provided.`,
   ...(rumMetrics
     ? [
         `- Data freshness: **${rumFreshness}** (maximum age: ${rumMaxAgeDays} days)`,

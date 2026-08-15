@@ -39,6 +39,9 @@ export function BulkPage() {
       new URLSearchParams(window.location.search).get("issuesColumn") || "all"
     );
   });
+  const [shareCopyState, setShareCopyState] = useState<
+    "idle" | "copied" | "error"
+  >("idle");
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -139,6 +142,14 @@ export function BulkPage() {
       `${url.pathname}${url.search}${url.hash}`
     );
   }, [invalidColumn, invalidSort]);
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareCopyState("copied");
+    } catch {
+      setShareCopyState("error");
+    }
+  };
   const visibleInvalidValues = useMemo(() => {
     const filtered =
       invalidColumn === "all"
@@ -591,14 +602,30 @@ export function BulkPage() {
                   </select>
                 </label>
               </div>
-              <button
-                type="button"
-                onClick={() => setInvalidColumn("all")}
-                disabled={invalidColumn === "all"}
-                className="mt-2 border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Clear current column filter
-              </button>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInvalidColumn("all")}
+                  disabled={invalidColumn === "all"}
+                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Clear current column filter
+                </button>
+                <button
+                  type="button"
+                  onClick={copyShareLink}
+                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
+                >
+                  Copy share link
+                </button>
+                <span className="text-[10px] text-[#647087]" aria-live="polite">
+                  {shareCopyState === "copied"
+                    ? "Link copied"
+                    : shareCopyState === "error"
+                      ? "Copy unavailable"
+                      : ""}
+                </span>
+              </div>
               <p className="mt-2 text-[10px] text-[#647087]">
                 Showing {Math.min(visibleInvalidValues.length, 20)} of{" "}
                 {visibleInvalidValues.length} filtered issues.

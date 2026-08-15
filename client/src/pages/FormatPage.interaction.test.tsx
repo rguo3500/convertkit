@@ -93,6 +93,11 @@ describe("format tool interactions", () => {
 
   it("filters and sorts invalid value locations", async () => {
     const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
     render(<BulkPage />);
     const csvInput = screen.getByRole("textbox", { name: "CSV text" });
     await user.clear(csvInput);
@@ -126,6 +131,11 @@ describe("format tool interactions", () => {
       "row-desc"
     );
     expect(window.location.search).toContain("issuesSort=row-desc");
+    await user.click(screen.getByRole("button", { name: "Copy share link" }));
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining("issuesSort=row-desc")
+    );
+    expect(screen.getByText("Link copied")).toBeTruthy();
     expect(
       screen.getByRole("button", { name: "Locate row 3, column kilograms" })
     ).toBeTruthy();
