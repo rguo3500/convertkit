@@ -148,10 +148,11 @@ describe("format tool interactions", () => {
     );
     expect(screen.getByText("Link copied")).toBeTruthy();
     expect(screen.getByText(/issuesSort=row-desc/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Close preview" }));
+    expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();
     await act(async () => {
       vi.advanceTimersByTime(5000);
     });
-    expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();
     expect(
       screen.getByRole("button", { name: "Locate row 3, column kilograms" })
     ).toBeTruthy();

@@ -143,6 +143,10 @@ export function BulkPage() {
       `${url.pathname}${url.search}${url.hash}`
     );
   }, [invalidColumn, invalidSort]);
+  const closeSharePreview = () => {
+    setShareCopyState("idle");
+    setShareLinkPreview("");
+  };
   const copyShareLink = async () => {
     try {
       const shareUrl = window.location.href;
@@ -637,12 +641,21 @@ export function BulkPage() {
                       : ""}
                 </span>
                 {shareCopyState === "copied" && shareLinkPreview && (
-                  <code
-                    className="block max-w-full truncate text-[10px] text-[#1d56c9]"
-                    title={shareLinkPreview}
-                  >
-                    {shareLinkPreview}
-                  </code>
+                  <>
+                    <code
+                      className="block max-w-full truncate text-[10px] text-[#1d56c9]"
+                      title={shareLinkPreview}
+                    >
+                      {shareLinkPreview}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={closeSharePreview}
+                      className="text-[10px] font-semibold text-[#647087] underline underline-offset-2 hover:text-[#1d56c9]"
+                    >
+                      Close preview
+                    </button>
+                  </>
                 )}
               </div>
               <p className="mt-2 text-[10px] text-[#647087]">

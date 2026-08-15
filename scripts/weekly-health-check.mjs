@@ -170,6 +170,19 @@ const trendLines = trendHistory.length
       "```",
     ]
   : ["No verified RUM snapshots are available yet."];
+const mobileTrendHistory = trendHistory.slice(-3);
+const mobileTrendLines = mobileTrendHistory.length
+  ? [
+      "### Mobile summary",
+      "",
+      "| # | LCP | INP | CLS | Status |",
+      "| ---: | ---: | ---: | ---: | --- |",
+      ...mobileTrendHistory.map(
+        (item, index) =>
+          `| ${index + 1} | ${item.lcpP75Ms ?? "n/a"} ms | ${item.inpP75Ms ?? "n/a"} ms | ${item.clsP75 ?? "n/a"} | ${item.status || "n/a"} |`
+      ),
+    ]
+  : ["### Mobile summary", "", "No verified snapshots available."];
 const rumNeedsReview = rumFreshness === "STALE_OR_INVALID";
 const rumStatusTone =
   rumFreshness === "FRESH"
@@ -234,6 +247,8 @@ const lines = [
   "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
   "",
   ...trendLines,
+  "",
+  ...mobileTrendLines,
   "",
   "## Manual review fields",
   "",
