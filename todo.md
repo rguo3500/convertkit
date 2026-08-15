@@ -387,3 +387,10 @@
 - [x] 记录当前 Secret/Variable 写入权限被 GitHub 403 拒绝
 - [x] 完善不依赖外部写权限的诊断与手动配置说明
 - [x] 执行本地质量验证并保存 checkpoint
+
+
+## 本轮管理员配置核验
+- [ ] 核对 GitHub Secret/Variable 是否已生效
+- [ ] 运行签名与 quality workflow 回归
+- [ ] 根据 robots 审核结果决定 Lighthouse 严格阻断
+- [ ] 执行最终验证并保存 checkpoint
