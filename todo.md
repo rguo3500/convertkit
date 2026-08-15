@@ -394,3 +394,10 @@
 - [x] 运行签名与 quality workflow 回归
 - [x] 根据 robots 审核结果决定 Lighthouse 严格阻断
 - [x] 执行最终验证并保存 checkpoint
+
+
+## 本轮签名与严格门禁复核
+- [x] 复核 GitHub Secret/Variable 与 ops-config-status
+- [x] 完善签名配置安全状态与手动指引
+- [x] 审核生产 robots 并决定 Lighthouse 严格门禁
+- [x] 执行真实 CI 与本地全量验证并保存 checkpoint
