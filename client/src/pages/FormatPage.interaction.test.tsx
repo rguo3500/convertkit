@@ -217,6 +217,30 @@ describe("format tool interactions", () => {
 });
 
 
+describe("CSV file boundary regression", () => {
+  it("accepts a near-limit UTF-8 CSV with multibyte content", async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const prefix = "名称,值\n咖啡,10\n";
+    const prefixBytes = new TextEncoder().encode(prefix).length;
+    const padding = "é".repeat(Math.floor((5 * 1024 * 1024 - prefixBytes - 2) / 2));
+    const nearLimit = new File([`${prefix}${padding}`], "near-limit.csv", { type: "text/csv" });
+    await user.upload(screen.getByLabelText("Input CSV"), nearLimit);
+    expect(screen.getByText(/Loaded near-limit\.csv/)).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(nearLimit.size).toBeLessThanOrEqual(5 * 1024 * 1024);
+  });
+
+  it("rejects invalid UTF-8 CSV bytes with an actionable error", async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const invalid = new File([new Uint8Array([0xff, 0xfe, 0x00, 0x61])], "invalid.csv", { type: "text/csv" });
+    await user.upload(screen.getByLabelText("Input CSV"), invalid);
+    expect(screen.getByRole("alert").textContent).toContain("not valid UTF-8 CSV");
+    expect(screen.getByRole("button", { name: "Download CSV" })).toHaveProperty("disabled", true);
+  });
+});
+
 describe("keyboard accessibility regression", () => {
   it("keeps the bulk shortcut trigger and close control visibly focusable", async () => {
     const user = userEvent.setup();

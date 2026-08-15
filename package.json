@@ -12,6 +12,7 @@
     "preview": "vite preview --host",
     "check": "tsc --noEmit",
     "test": "vitest run",
+    "test:automation": "node --test scripts/validate-rum-export-index.test.mjs scripts/webhook-retry.test.cjs",
     "test:e2e": "playwright test",
     "audit": "pnpm dlx @lhci/cli autorun",
     "audit:summary": "node scripts/summarize-lighthouse.mjs",

@@ -40,6 +40,9 @@ jobs:
           end=$(date +%s)
           echo "test_duration=$((end-start))s" > /tmp/convertkit-timing.log
           exit "$status"
+      - name: Run automation tests
+        shell: bash
+        run: pnpm run test:automation 2>&1 | tee /tmp/convertkit-automation-test.log
       - name: Typecheck
         run: pnpm run check
       - name: Build
@@ -134,35 +137,24 @@ jobs:
                 if (process.env.TEAM_ALERT_WEBHOOK_URL) {
                   maxAttempts = Math.min(Math.max(Number.parseInt(process.env.TEAM_ALERT_MAX_ATTEMPTS || '3', 10) || 3, 1), 5);
                   backoffCapMs = Math.min(Math.max(Number.parseInt(process.env.TEAM_ALERT_BACKOFF_CAP_MS || '4000', 10) || 4000, 250), 10000);
-                  let delivered = false;
-                  for (let attempt = 0; attempt < maxAttempts && !delivered; attempt += 1) {
-                    try {
-                      const response = await fetch(process.env.TEAM_ALERT_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/json' },
-                        body: JSON.stringify({ text: changeMessage, content: changeMessage }),
-                      });
-                      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                      delivered = true;
-                      webhookStatus = 'delivered';
-                    } catch (error) {
-                      const safeError = error instanceof Error ? error.message : 'unknown error';
-                      const failureCategory = /^HTTP 4/.test(safeError)
-                        ? 'HTTP_4XX'
-                        : /^HTTP 5/.test(safeError)
-                          ? 'HTTP_5XX'
-                          : 'NETWORK_OR_TIMEOUT';
-                      const bucket = webhookFailureBucket(new Date().toISOString());
-                      const bucketKey = `${bucket} · ${failureCategory}`;
-                      webhookFailureBuckets[bucketKey] = (webhookFailureBuckets[bucketKey] || 0) + 1;
-                      if (attempt === maxAttempts - 1) {
-                        webhookStatus = 'failed';
-                        webhookFailureCategory = failureCategory;
-                        console.warn(`Team webhook delivery failed after ${maxAttempts} attempts [${webhookFailureCategory}]`);
-                      } else {
-                        await new Promise(resolve => setTimeout(resolve, Math.min(2 ** attempt * 1000, backoffCapMs)));
-                      }
-                    }
+                  const { deliverWebhook } = require('./scripts/webhook-retry.cjs');
+                  const retryResult = await deliverWebhook({
+                    url: process.env.TEAM_ALERT_WEBHOOK_URL,
+                    payload: { text: changeMessage, content: changeMessage },
+                    maxAttempts,
+                    backoffCapMs,
+                  });
+                  if (retryResult.delivered) {
+                    webhookStatus = 'delivered';
+                  } else {
+                    webhookStatus = 'failed';
+                    webhookFailureCategory = retryResult.failureCategory;
+                    console.warn(`Team webhook delivery failed after ${retryResult.attempts} attempts [${webhookFailureCategory}]`);
+                  }
+                  for (const failure of retryResult.failures) {
+                    const bucket = webhookFailureBucket(new Date().toISOString());
+                    const bucketKey = `${bucket} · ${failure.category}`;
+                    webhookFailureBuckets[bucketKey] = (webhookFailureBuckets[bucketKey] || 0) + 1;
                   }
                 }
                 const crypto = require('crypto');
@@ -309,6 +301,7 @@ jobs:
         shell: bash
         env:
           ARTIFACT_RETENTION_DAYS: ${{ vars.QUALITY_ARTIFACT_RETENTION_DAYS || 30 }}
+          RUM_EXPORT_SIGNING_KEY: ${{ secrets.RUM_EXPORT_SIGNING_KEY }}
         run: |
           mkdir -p artifacts/summary
           {
@@ -345,12 +338,20 @@ jobs:
           const indexBase = { schemaVersion: 1, integrityVersion: 1, generatedAt: new Date().toISOString(), runTimestamp: source.runTimestamp || null, commitSha: source.commitSha || null, preset: source.preset || null, windowStart: source.windowStart || null, windowEnd: source.windowEnd || null, files: entries };
           const canonical = JSON.stringify(indexBase);
           const manifestSha256 = crypto.createHash('sha256').update(canonical).digest('hex');
-          fs.writeFileSync('artifacts/summary/rum-route-export-index.json', JSON.stringify({ ...indexBase, manifestSha256 }, null, 2) + '\\n');
+          const signingKey = process.env.RUM_EXPORT_SIGNING_KEY || '';
+          const signature = signingKey ? crypto.createHmac('sha256', signingKey).update(canonical).digest('base64url') : null;
+          fs.writeFileSync('artifacts/summary/rum-route-export-index.json', JSON.stringify({ ...indexBase, manifestSha256, signatureAlgorithm: 'HMAC-SHA256', signatureStatus: signature ? 'configured' : 'not_configured', signature }, null, 2) + '\\n');
           NODE
 
       - name: Validate webhook audit schema
         if: always()
         run: node scripts/validate-webhook-audit.mjs artifacts/summary/webhook-audit.json | tee artifacts/summary/webhook-audit-schema.txt
+
+      - name: Validate RUM export index
+        if: always()
+        env:
+          RUM_EXPORT_SIGNING_KEY: ${{ secrets.RUM_EXPORT_SIGNING_KEY }}
+        run: node scripts/validate-rum-export-index.mjs artifacts/summary/rum-route-export-index.json | tee artifacts/summary/rum-route-export-index-validation.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
@@ -372,6 +373,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           JOB_STATUS: ${{ job.status }}
+          RUM_EXPORT_SIGNING_KEY: ${{ secrets.RUM_EXPORT_SIGNING_KEY }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -408,6 +410,16 @@ jobs:
             const routeExportIndexPath = 'artifacts/summary/rum-route-export-index.json';
             const routeExportIndex = fs.existsSync(routeExportIndexPath) ? JSON.parse(fs.readFileSync(routeExportIndexPath, 'utf8')) : null;
             const routeExportIntegrity = routeExportIndex?.manifestSha256 ? `integrity v${routeExportIndex.integrityVersion}: ${routeExportIndex.manifestSha256}` : 'integrity unavailable';
+            const signingKey = process.env.RUM_EXPORT_SIGNING_KEY || '';
+            const signedPayload = routeExportIndex ? { ...routeExportIndex } : null;
+            if (signedPayload) {
+              delete signedPayload.manifestSha256;
+              delete signedPayload.signatureAlgorithm;
+              delete signedPayload.signatureStatus;
+              delete signedPayload.signature;
+            }
+            const expectedSignature = signingKey && signedPayload ? require('crypto').createHmac('sha256', signingKey).update(JSON.stringify(signedPayload)).digest('base64url') : null;
+            const signatureStatus = routeExportIndex?.signatureStatus === 'not_configured' ? 'not configured' : expectedSignature && expectedSignature === routeExportIndex?.signature ? 'verified' : 'unverified';
             const reportCounts = {
               axe: artifactFiles.filter(file => String(file).startsWith('axe/')).length,
               lighthouse: artifactFiles.filter(file => String(file).startsWith('lighthouse/')).length,
@@ -430,7 +442,7 @@ jobs:
               }
             }
             const stepFailureSummary = Object.entries(failuresByStep).map(([step, details]) => `${step}: ${Object.entries(details.categories).map(([category, count]) => `${category} x${count}`).join(', ')}; last ${details.lastSeen || 'unknown'}`).join(' · ') || 'none recorded';
-            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — ${routeExportIntegrity} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
+            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — ${routeExportIntegrity} — signature ${signatureStatus} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
