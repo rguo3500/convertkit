@@ -8,5 +8,15 @@
     "inpP75Ms": 180,
     "clsP75": 0.08,
     "status": "FRESH"
+  },
+  {
+    "collectedAt": "2026-08-15T00:00:00Z",
+    "windowStart": "2026-08-08T00:00:00Z",
+    "windowEnd": "2026-08-15T00:00:00Z",
+    "visits": 1234,
+    "lcpP75Ms": 2100,
+    "inpP75Ms": 180,
+    "clsP75": 0.08,
+    "status": "FRESH"
   }
 ]

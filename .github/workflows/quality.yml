@@ -112,11 +112,24 @@ jobs:
                 const changeMessage = `Lighthouse exception owner changed: ${previousOwner ? `@${previousOwner}` : 'unassigned'} → @${assignee} at ${new Date().toISOString()}.`;
                 await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber, body: changeMessage });
                 if (process.env.TEAM_ALERT_WEBHOOK_URL) {
-                  await fetch(process.env.TEAM_ALERT_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' },
-                    body: JSON.stringify({ text: changeMessage, content: changeMessage }),
-                  });
+                  let delivered = false;
+                  for (let attempt = 0; attempt < 3 && !delivered; attempt += 1) {
+                    try {
+                      const response = await fetch(process.env.TEAM_ALERT_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ text: changeMessage, content: changeMessage }),
+                      });
+                      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                      delivered = true;
+                    } catch (error) {
+                      if (attempt === 2) {
+                        console.warn(`Team webhook delivery failed after 3 attempts: ${error instanceof Error ? error.message : 'unknown error'}`);
+                      } else {
+                        await new Promise(resolve => setTimeout(resolve, 2 ** attempt * 1000));
+                      }
+                    }
+                  }
                 }
               }
             } else if (existing) {

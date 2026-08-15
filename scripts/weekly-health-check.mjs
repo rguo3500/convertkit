@@ -132,6 +132,44 @@ const sitemapHasProductionHost =
 const robotsHasSitemap = robots?.body.includes(`${site}/sitemap.xml`) ?? false;
 const allHttpOk = checks.every(item => item.ok);
 const seoOk = sitemapHasProductionHost && robotsHasSitemap;
+let trendHistory = [];
+try {
+  const storedHistory = JSON.parse(await readFile(historyPath, "utf8"));
+  trendHistory = Array.isArray(storedHistory) ? storedHistory.slice(-12) : [];
+} catch {
+  trendHistory = [];
+}
+const trendLines = trendHistory.length
+  ? [
+      "| Collected at (UTC) | Visits | LCP P75 (ms) | INP P75 (ms) | CLS P75 | Status |",
+      "| --- | ---: | ---: | ---: | ---: | --- |",
+      ...trendHistory.map(
+        item =>
+          `| ${item.collectedAt || "n/a"} | ${item.visits ?? "n/a"} | ${item.lcpP75Ms ?? "n/a"} | ${item.inpP75Ms ?? "n/a"} | ${item.clsP75 ?? "n/a"} | ${item.status || "n/a"} |`
+      ),
+      "",
+      "```mermaid",
+      "xychart-beta",
+      '  title "RUM P75 trend (verified snapshots)"',
+      "  x-axis [" +
+        trendHistory.map((_, index) => `\"${index + 1}\"`).join(", ") +
+        "]",
+      '  y-axis "Milliseconds" 0 --> ' +
+        Math.max(
+          ...trendHistory.map(item =>
+            Math.max(item.lcpP75Ms || 0, item.inpP75Ms || 0)
+          ),
+          1
+        ),
+      "  line [" +
+        trendHistory.map(item => item.lcpP75Ms ?? 0).join(", ") +
+        "]",
+      "  line [" +
+        trendHistory.map(item => item.inpP75Ms ?? 0).join(", ") +
+        "]",
+      "```",
+    ]
+  : ["No verified RUM snapshots are available yet."];
 const rumNeedsReview = rumFreshness === "STALE_OR_INVALID";
 const rumStatusTone =
   rumFreshness === "FRESH"
@@ -194,6 +232,8 @@ const lines = [
   "## RUM trend history",
   "",
   "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
+  "",
+  ...trendLines,
   "",
   "## Manual review fields",
   "",

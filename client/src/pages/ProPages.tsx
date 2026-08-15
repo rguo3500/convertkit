@@ -153,6 +153,14 @@ export function BulkPage() {
       setShareCopyState("error");
     }
   };
+  useEffect(() => {
+    if (shareCopyState !== "copied") return;
+    const timer = window.setTimeout(() => {
+      setShareCopyState("idle");
+      setShareLinkPreview("");
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [shareCopyState]);
   const visibleInvalidValues = useMemo(() => {
     const filtered =
       invalidColumn === "all"

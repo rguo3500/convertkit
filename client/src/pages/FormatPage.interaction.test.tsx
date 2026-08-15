@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import FormatPage from "./FormatPage";
@@ -11,6 +17,7 @@ const originalRevokeObjectURL = URL.revokeObjectURL;
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.useRealTimers();
   URL.createObjectURL = originalCreateObjectURL;
   URL.revokeObjectURL = originalRevokeObjectURL;
 });
@@ -131,12 +138,20 @@ describe("format tool interactions", () => {
       "row-desc"
     );
     expect(window.location.search).toContain("issuesSort=row-desc");
-    await user.click(screen.getByRole("button", { name: "Copy share link" }));
+    vi.useFakeTimers();
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Copy share link" }));
+      await Promise.resolve();
+    });
     expect(writeText).toHaveBeenCalledWith(
       expect.stringContaining("issuesSort=row-desc")
     );
     expect(screen.getByText("Link copied")).toBeTruthy();
     expect(screen.getByText(/issuesSort=row-desc/)).toBeTruthy();
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();
     expect(
       screen.getByRole("button", { name: "Locate row 3, column kilograms" })
     ).toBeTruthy();
