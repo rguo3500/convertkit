@@ -401,3 +401,10 @@
 - [x] 完善签名配置安全状态与手动指引
 - [x] 审核生产 robots 并决定 Lighthouse 严格门禁
 - [x] 执行真实 CI 与本地全量验证并保存 checkpoint
+
+
+## 本轮签名与 Lighthouse 严格化
+- [x] 复核 GitHub 管理权限与签名配置状态
+- [x] 复核 Cloudflare Managed robots 内容及外部审核结果
+- [x] 按结果调整 Lighthouse 严格阻断开关
+- [x] 执行真实 CI 与本地全量验证并保存 checkpoint
