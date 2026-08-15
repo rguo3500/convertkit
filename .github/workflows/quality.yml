@@ -66,6 +66,15 @@ jobs:
       - name: Check Lighthouse regression thresholds
         if: always()
         run: pnpm run audit:regression
+      - name: Restore webhook delivery history
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: artifacts/webhook-history.json
+          key: convertkit-webhook-history-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            convertkit-webhook-history-${{ github.ref_name }}-
+
       - name: Manage Lighthouse exception reminder
         if: always()
         continue-on-error: true
@@ -156,6 +165,30 @@ jobs:
                     }
                   }
                 }
+                const historyPath = 'artifacts/webhook-history.json';
+                fs.mkdirSync('artifacts', { recursive: true });
+                let webhookHistory = [];
+                if (fs.existsSync(historyPath)) {
+                  try {
+                    const parsedHistory = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+                    webhookHistory = Array.isArray(parsedHistory) ? parsedHistory : [];
+                  } catch { webhookHistory = []; }
+                }
+                webhookHistory = [
+                  ...webhookHistory,
+                  {
+                    runId: context.runId,
+                    recordedAt: new Date().toISOString(),
+                    status: webhookStatus,
+                    failureCategory: webhookFailureCategory,
+                    failureBuckets: webhookFailureBuckets,
+                  },
+                ].slice(-30);
+                fs.writeFileSync(historyPath, `${JSON.stringify(webhookHistory, null, 2)}\n`);
+                const historicalSummary = webhookHistory
+                  .slice(-10)
+                  .map(item => `${item.recordedAt} · ${item.status} · ${item.failureCategory}`)
+                  .join('; ') || 'none';
                 await core.summary
                   .addHeading('Team webhook delivery')
                   .addTable([
@@ -165,6 +198,7 @@ jobs:
                     ['Max attempts', maxAttempts ? String(maxAttempts) : 'n/a'],
                     ['Backoff cap', backoffCapMs ? `${backoffCapMs} ms` : 'n/a'],
                     ['Failure time buckets (UTC)', Object.entries(webhookFailureBuckets).map(([bucket, count]) => `${bucket}: ${count}`).join('; ') || 'none'],
+                    ['Historical runs (latest 10)', historicalSummary],
                   ])
                   .write();
               }
@@ -221,6 +255,11 @@ jobs:
             if [ -f artifacts/summary/lighthouse-exception-reminders.txt ]; then
               echo ""
               cat artifacts/summary/lighthouse-exception-reminders.txt
+            fi
+            if [ -f artifacts/webhook-history.json ]; then
+              echo ""
+              echo "Webhook delivery history:"
+              tail -n 80 artifacts/webhook-history.json
             fi
           } > artifacts/summary/quality-summary.txt
 

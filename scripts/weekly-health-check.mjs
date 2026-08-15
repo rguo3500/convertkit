@@ -139,6 +139,11 @@ try {
 } catch {
   trendHistory = [];
 }
+const metricTone = (metric, value) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
+  const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
+  return value <= threshold ? "GREEN" : "AMBER";
+};
 const historyTone = status =>
   status === "FRESH" ? "GREEN" : status === "STALE_OR_INVALID" ? "AMBER" : "NEUTRAL";
 const toneBadge = tone => {
@@ -152,6 +157,7 @@ const trendDirection = (current, previous) => {
   if (current === "AMBER" && previous === "GREEN") return "DEGRADING";
   return "CHANGED";
 };
+const metricBadge = (metric, value) => `${value ?? "n/a"} · ${toneBadge(metricTone(metric, value))}`;
 const trendLines = trendHistory.length
   ? [
       "| Collected at (UTC) | Visits | LCP P75 (ms) | INP P75 (ms) | CLS P75 | Status | Trend |",
@@ -159,7 +165,7 @@ const trendLines = trendHistory.length
       ...trendHistory.map((item, index) => {
         const tone = historyTone(item.status);
         const previousTone = index > 0 ? historyTone(trendHistory[index - 1].status) : null;
-        return `| ${item.collectedAt || "n/a"} | ${item.visits ?? "n/a"} | ${item.lcpP75Ms ?? "n/a"} | ${item.inpP75Ms ?? "n/a"} | ${item.clsP75 ?? "n/a"} | ${toneBadge(tone)} | ${trendDirection(tone, previousTone)} |`;
+        return `| ${item.collectedAt || "n/a"} | ${item.visits ?? "n/a"} | ${metricBadge("LCP", item.lcpP75Ms)} | ${metricBadge("INP", item.inpP75Ms)} | ${metricBadge("CLS", item.clsP75)} | ${toneBadge(tone)} | ${trendDirection(tone, previousTone)} |`;
       }),
       "",
       "```mermaid",
@@ -184,11 +190,6 @@ const trendLines = trendHistory.length
       "```",
     ]
   : ["No verified RUM snapshots are available yet."];
-const metricTone = (metric, value) => {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
-  const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
-  return value <= threshold ? "GREEN" : "AMBER";
-};
 const mobileTrendHistory = trendHistory.slice(-3);
 const mobileTrendLines = mobileTrendHistory.length
   ? [
@@ -201,7 +202,7 @@ const mobileTrendLines = mobileTrendHistory.length
       "| ---: | ---: | ---: | ---: | --- |",
       ...mobileTrendHistory.map(
         (item, index) =>
-          `| ${index + 1} | ${item.lcpP75Ms ?? "n/a"} ms · ${metricTone("LCP", item.lcpP75Ms)} | ${item.inpP75Ms ?? "n/a"} ms · ${metricTone("INP", item.inpP75Ms)} | ${item.clsP75 ?? "n/a"} · ${metricTone("CLS", item.clsP75)} | ${item.status || "n/a"} |`
+          `| ${index + 1} | ${metricBadge("LCP", item.lcpP75Ms)} ms | ${metricBadge("INP", item.inpP75Ms)} ms | ${metricBadge("CLS", item.clsP75)} | ${item.status || "n/a"} |`
       ),
     ]
   : ["### Mobile summary", "", "No verified snapshots available."];
@@ -267,7 +268,7 @@ const lines = [
   "## RUM trend history",
   "",
   "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
-  "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. Trend direction compares each snapshot with the previous verified snapshot.",
+  "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are GREEN; higher values are AMBER. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
   ...trendLines,
   "",

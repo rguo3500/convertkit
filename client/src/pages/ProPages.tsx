@@ -44,6 +44,7 @@ export function BulkPage() {
   >("idle");
   const [shareLinkPreview, setShareLinkPreview] = useState("");
   const [shareSecondsLeft, setShareSecondsLeft] = useState(0);
+  const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -160,6 +161,17 @@ export function BulkPage() {
       setShareCopyState("error");
     }
   };
+  useEffect(() => {
+    const handleShortcutHelp = (event: KeyboardEvent) => {
+      if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
+        event.preventDefault();
+        setShortcutHelpOpen(true);
+      }
+      if (event.key === "Escape") setShortcutHelpOpen(false);
+    };
+    window.addEventListener("keydown", handleShortcutHelp);
+    return () => window.removeEventListener("keydown", handleShortcutHelp);
+  }, []);
   useEffect(() => {
     if (shareCopyState !== "copied") return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -644,6 +656,15 @@ export function BulkPage() {
                 >
                   Copy share link
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShortcutHelpOpen(true)}
+                  aria-expanded={shortcutHelpOpen}
+                  aria-controls="bulk-shortcut-help"
+                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
+                >
+                  Keyboard shortcuts
+                </button>
                 <span className="text-[10px] text-[#647087]" aria-live="polite">
                   {shareCopyState === "copied"
                     ? `Link copied. Preview hides in ${shareSecondsLeft} seconds. Press Escape or use Close preview to dismiss it.`
@@ -676,6 +697,33 @@ export function BulkPage() {
               <p className="mt-1 text-[10px] text-[#647087]">
                 Keyboard shortcut: press Escape to close the share preview.
               </p>
+              {shortcutHelpOpen && (
+                <div
+                  id="bulk-shortcut-help"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="bulk-shortcut-title"
+                  className="mt-3 border border-[#cbd8ee] bg-[#f5f8ff] p-3 text-xs text-[#536276]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 id="bulk-shortcut-title" className="font-semibold text-[#172033]">
+                      Keyboard shortcuts
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setShortcutHelpOpen(false)}
+                      className="text-[10px] font-semibold text-[#536276] underline underline-offset-2 hover:text-[#1d56c9]"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <dl className="mt-2 grid gap-1 sm:grid-cols-3">
+                    <div><dt className="font-mono text-[10px] font-semibold">Escape</dt><dd>Close this panel or share preview.</dd></div>
+                    <div><dt className="font-mono text-[10px] font-semibold">Shift + /</dt><dd>Open keyboard shortcuts.</dd></div>
+                    <div><dt className="font-mono text-[10px] font-semibold">Tab</dt><dd>Move through filters and issue rows.</dd></div>
+                  </dl>
+                </div>
+              )}
               <div className="mt-2 grid gap-1">
                 {visibleInvalidValues.slice(0, 20).map(item => (
                   <button
