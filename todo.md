@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮路由差异与快捷键测试完善
+- [x] 设计按路由 RUM 窗口差异数据模型
+- [x] 实现路由级 LCP、INP、CLS 差异表
+- [x] 将失败趋势写入 webhook 审计 JSON
+- [x] 为快捷键帮助面板增加 focus-visible 自动化断言
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮历史对比与焦点回归完善
 - [x] 设计预设时间窗口历史对比摘要
 - [x] 实现 RUM 预设与历史窗口对比

@@ -215,3 +215,22 @@ describe("format tool interactions", () => {
     expect(screen.getByText("Recent local runs")).toBeTruthy();
   });
 });
+
+
+describe("keyboard accessibility regression", () => {
+  it("keeps the bulk shortcut trigger and close control visibly focusable", async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const csvInput = screen.getByRole("textbox", { name: "CSV text" });
+    await user.clear(csvInput);
+    fireEvent.change(csvInput, {
+      target: { value: "value\nnot-a-number" },
+    });
+    const trigger = screen.getByRole("button", { name: /keyboard shortcuts|键盘快捷键/i });
+    expect(trigger.className).toContain("focus-visible:outline");
+
+    await user.click(trigger);
+    const close = screen.getByRole("button", { name: "Close" });
+    expect(close.className).toContain("focus-visible:outline");
+  });
+});

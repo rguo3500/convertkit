@@ -727,7 +727,7 @@ export function BulkPage() {
                   type="button"
                   onClick={copyShareLink}
                   aria-label={a11yLabels.copyShare}
-                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
+                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#5f8dff] focus-visible:outline-offset-3"
                 >
                   Copy share link
                 </button>
@@ -738,7 +738,7 @@ export function BulkPage() {
                   aria-label={a11yLabels.shortcuts}
                   aria-expanded={shortcutHelpOpen}
                   aria-controls="bulk-shortcut-help"
-                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
+                  className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#5f8dff] focus-visible:outline-offset-3"
                 >
                   Keyboard shortcuts
                 </button>
@@ -765,7 +765,7 @@ export function BulkPage() {
                     <button
                       type="button"
                       onClick={closeSharePreview}
-                      className="text-[10px] font-semibold text-[#647087] underline underline-offset-2 hover:text-[#1d56c9]"
+                      className="text-[10px] font-semibold text-[#647087] underline underline-offset-2 hover:text-[#1d56c9] focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#5f8dff] focus-visible:outline-offset-3"
                     >
                       Close preview
                     </button>
@@ -799,7 +799,7 @@ export function BulkPage() {
                       ref={shortcutCloseRef}
                       type="button"
                       onClick={closeShortcutHelp}
-                      className="text-[10px] font-semibold text-[#536276] underline underline-offset-2 hover:text-[#1d56c9]"
+                      className="text-[10px] font-semibold text-[#536276] underline underline-offset-2 hover:text-[#1d56c9] focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#5f8dff] focus-visible:outline-offset-3"
                     >
                       Close
                     </button>

@@ -189,6 +189,15 @@ jobs:
                 ].slice(-30);
                 fs.writeFileSync(historyPath, `${JSON.stringify(webhookHistory, null, 2)}\n`);
                 const historyDigest = crypto.createHash('sha256').update(fs.readFileSync(historyPath)).digest('hex');
+                const failureTrend = {};
+                for (const item of webhookHistory.slice(-10)) {
+                  for (const [bucket, count] of Object.entries(item.failureBuckets || {})) {
+                    const entry = failureTrend[bucket] || { total: 0, lastSeen: null };
+                    entry.total += Number(count) || 0;
+                    if (item.recordedAt && (!entry.lastSeen || item.recordedAt > entry.lastSeen)) entry.lastSeen = item.recordedAt;
+                    failureTrend[bucket] = entry;
+                  }
+                }
                 const auditRecord = {
                   schemaVersion: 1,
                   runId: context.runId,
@@ -198,23 +207,18 @@ jobs:
                   historyDigest,
                   current: webhookHistory.at(-1),
                   retainedRuns: webhookHistory.length,
+                  failureTrend: {
+                    windowRuns: Math.min(webhookHistory.length, 10),
+                    buckets: failureTrend,
+                  },
                 };
                 fs.writeFileSync(auditPath, `${JSON.stringify(auditRecord, null, 2)}\n`);
                 const historicalSummary = webhookHistory
                   .slice(-10)
                   .map(item => `${item.recordedAt} · ${item.status} · ${item.failureCategory}`)
                   .join('; ') || 'none';
-                const failureTrend = {};
-                for (const item of webhookHistory.slice(-10)) {
-                  for (const [bucket, count] of Object.entries(item.failureBuckets || {})) {
-                    const entry = failureTrend[bucket] || { count: 0, lastSeen: null };
-                    entry.count += Number(count) || 0;
-                    if (item.recordedAt && (!entry.lastSeen || item.recordedAt > entry.lastSeen)) entry.lastSeen = item.recordedAt;
-                    failureTrend[bucket] = entry;
-                  }
-                }
                 const failureTrendSummary = Object.entries(failureTrend)
-                  .map(([bucket, entry]) => `${bucket}: ${entry.count} total; last ${entry.lastSeen || 'unknown'}`)
+                  .map(([bucket, entry]) => `${bucket}: ${entry.total} total; last ${entry.lastSeen || 'unknown'}`)
                   .join('; ') || 'none';
                 await core.summary
                   .addHeading('Team webhook delivery')

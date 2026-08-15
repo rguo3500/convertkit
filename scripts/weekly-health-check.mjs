@@ -184,6 +184,20 @@ const comparisonDelta = (current, baseline, suffix = "") => {
 const comparisonSummary = comparisonCurrent && comparisonBaseline
   ? `Window comparison: LCP ${comparisonDelta(comparisonCurrent.lcpP75Ms, comparisonBaseline.lcpP75Ms, " ms")}, INP ${comparisonDelta(comparisonCurrent.inpP75Ms, comparisonBaseline.inpP75Ms, " ms")}, CLS ${comparisonDelta(comparisonCurrent.clsP75, comparisonBaseline.clsP75)} versus the previous verified window.`
   : "Window comparison: baseline unavailable; at least two comparable verified snapshots are required.";
+const routeDifferenceLines = comparisonCurrent && comparisonBaseline && Array.isArray(comparisonCurrent.routes)
+  ? [
+      "### Route window comparison",
+      "",
+      "| Route | LCP Δ (ms) | INP Δ (ms) | CLS Δ |",
+      "| --- | ---: | ---: | ---: |",
+      ...comparisonCurrent.routes.slice(0, 20).map(route => {
+        const baselineRoute = Array.isArray(comparisonBaseline.routes)
+          ? comparisonBaseline.routes.find(item => item.path === route.path)
+          : null;
+        return `| \`${route.path}\` | ${comparisonDelta(route.lcpP75Ms, baselineRoute?.lcpP75Ms)} | ${comparisonDelta(route.inpP75Ms, baselineRoute?.inpP75Ms)} | ${comparisonDelta(route.clsP75, baselineRoute?.clsP75)} |`;
+      }),
+    ]
+  : ["### Route window comparison", "", "No comparable route-level baseline is available."];
 const metricTone = (metric, value) => {
   if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
   const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
@@ -365,6 +379,7 @@ const lines = [
   "Timezone: **UTC**.",
   historyFilterSummary,
   comparisonSummary,
+  ...routeDifferenceLines,
   "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are GREEN; higher values are AMBER. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
   ...trendLines,
