@@ -46,6 +46,12 @@ jobs:
           CLOUDFLARE_RUM_MAX_AGE_DAYS: 8
           CLOUDFLARE_RUM_HISTORY_PRESET: ${{ inputs.rum_history_preset || 'all' }}
         run: pnpm run health:weekly artifacts/weekly-health/health-check.md
+      - name: Audit production robots.txt
+        if: always()
+        env:
+          PRODUCTION_SITE_URL: https://lovexiaoyue.cc.cd
+          FAIL_ON_PRODUCTION_ROBOTS_AUDIT: ${{ vars.FAIL_ON_PRODUCTION_ROBOTS_AUDIT || 'false' }}
+        run: node scripts/check-production-robots.mjs artifacts/weekly-health/production-robots-audit.md
       - name: Run production Lighthouse audit
         id: production_lighthouse
         if: always()
@@ -57,6 +63,7 @@ jobs:
         if: always()
         env:
           FAIL_ON_PRODUCTION_LIGHTHOUSE_REGRESSION: ${{ vars.FAIL_ON_PRODUCTION_LIGHTHOUSE_REGRESSION || 'false' }}
+          ALLOW_CLOUDFLARE_MANAGED_ROBOTS: ${{ vars.ALLOW_CLOUDFLARE_MANAGED_ROBOTS || 'true' }}
         run: node scripts/compare-production-lighthouse.mjs artifacts/weekly-health/production-lighthouse-summary.md
       - name: Publish report to job summary
         if: always()
@@ -71,6 +78,10 @@ jobs:
             echo "" >> "$GITHUB_STEP_SUMMARY"
             cat artifacts/weekly-health/production-lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
+          if [ -f artifacts/weekly-health/production-robots-audit.md ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            cat artifacts/weekly-health/production-robots-audit.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Upload weekly health report
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,6 +92,7 @@ jobs:
             artifacts/weekly-health/rum-route-differences-*.csv
             artifacts/weekly-health/rum-route-differences-*.json
             artifacts/weekly-health/production-lighthouse-summary.md
+            artifacts/weekly-health/production-robots-audit.md
             artifacts/production-lighthouse
           if-no-files-found: warn
           retention-days: 90

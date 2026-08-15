@@ -290,11 +290,25 @@ jobs:
               echo "Webhook audit record:"
               cat artifacts/summary/webhook-audit.json
             fi
+            if [ -f artifacts/summary/webhook-audit-trend.md ]; then
+              echo ""
+              cat artifacts/summary/webhook-audit-trend.md
+            fi
             if [ -f artifacts/summary/artifact-index.md ]; then
               echo ""
               cat artifacts/summary/artifact-index.md
             fi
           } > artifacts/summary/quality-summary.txt
+
+      - name: Publish webhook trend to Job Summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f artifacts/summary/webhook-audit-trend.md ]; then
+            cat artifacts/summary/webhook-audit-trend.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Webhook trend report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Generate artifact download index
         if: always()
@@ -397,6 +411,9 @@ jobs:
             const artifactFiles = fs.existsSync('artifacts') ? fs.readdirSync('artifacts', { recursive: true }) : [];
             const schemaPath = 'artifacts/summary/webhook-audit-schema.txt';
             const schemaStatus = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, 'utf8').trim() : 'Schema validation not run';
+            const webhookTrendLink = fs.existsSync('artifacts/summary/webhook-audit-trend.html')
+              ? `[HTML trend](${artifactUrl}#webhook-audit-trend.html) · [Markdown trend](${artifactUrl}#webhook-audit-trend.md)`
+              : 'trend report unavailable';
             const routeExportFiles = artifactFiles.filter(file => /rum-route-differences-.*\.(csv|json)$/.test(String(file)));
             const routeExportRows = routeExportFiles.reduce((total, file) => {
               try {
@@ -447,7 +464,7 @@ jobs:
               }
             }
             const stepFailureSummary = Object.entries(failuresByStep).map(([step, details]) => `${step}: ${Object.entries(details.categories).map(([category, count]) => `${category} x${count}`).join(', ')}; last ${details.lastSeen || 'unknown'}`).join(' · ') || 'none recorded';
-            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — ${routeExportIntegrity} — signature ${signatureStatus} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
+            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus} — ${webhookTrendLink}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — ${routeExportIntegrity} — signature ${signatureStatus} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,

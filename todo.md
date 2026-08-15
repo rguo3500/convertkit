@@ -366,3 +366,10 @@
 - [x] 增加 webhook 审计历史趋势可视化输出
 - [x] 增加生产域名 Lighthouse 与 RUM 基线对比报告
 - [x] 运行全量质量验证并保存 checkpoint
+
+
+## 本轮配置与运营收尾
+- [x] 增加签名密钥配置状态与严格模式检查
+- [x] 处理 Cloudflare robots 差异并明确 Lighthouse 阻断策略
+- [x] 将 webhook 趋势报告接入团队周报输出
+- [x] 运行全量质量验证并保存 checkpoint
