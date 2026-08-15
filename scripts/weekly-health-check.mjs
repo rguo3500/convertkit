@@ -153,8 +153,10 @@ try {
 } catch {
   trendHistory = [];
 }
-const rumHistoryStart = process.env.CLOUDFLARE_RUM_HISTORY_START_DATE || "";
-const rumHistoryEnd = process.env.CLOUDFLARE_RUM_HISTORY_END_DATE || "";
+const rumHistoryPreset = process.env.CLOUDFLARE_RUM_HISTORY_PRESET || "";
+const presetDays = rumHistoryPreset === "7d" ? 7 : rumHistoryPreset === "30d" ? 30 : null;
+const rumHistoryStart = process.env.CLOUDFLARE_RUM_HISTORY_START_DATE || (presetDays ? new Date(started.getTime() - presetDays * 86_400_000).toISOString().slice(0, 10) : "");
+const rumHistoryEnd = process.env.CLOUDFLARE_RUM_HISTORY_END_DATE || (presetDays ? started.toISOString().slice(0, 10) : "");
 const startTime = rumHistoryStart ? Date.parse(`${rumHistoryStart}T00:00:00Z`) : -Infinity;
 const endTime = rumHistoryEnd ? Date.parse(`${rumHistoryEnd}T23:59:59.999Z`) : Infinity;
 const hasValidHistoryRange = Number.isFinite(startTime) && Number.isFinite(endTime) && startTime <= endTime;
@@ -165,10 +167,10 @@ if (hasValidHistoryRange) {
   });
 }
 const historyFilterSummary = hasValidHistoryRange
-  ? `History filter: **${rumHistoryStart} → ${rumHistoryEnd} UTC** (${trendHistory.length} snapshots).`
+  ? `History filter: **${rumHistoryPreset === "7d" ? "last 7 days" : rumHistoryPreset === "30d" ? "last 30 days" : `${rumHistoryStart} → ${rumHistoryEnd} UTC`}** (${trendHistory.length} snapshots).`
   : rumHistoryStart || rumHistoryEnd
     ? "History filter: **ignored** because the configured UTC dates are invalid or reversed."
-    : "History filter: **none** (latest 12 verified snapshots).";
+    : "History filter: **all available** (latest 12 verified snapshots).";
 const metricTone = (metric, value) => {
   if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
   const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;

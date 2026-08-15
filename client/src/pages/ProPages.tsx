@@ -47,6 +47,10 @@ export function BulkPage() {
   const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const [shortcutAnnouncement, setShortcutAnnouncement] = useState("");
   const [shortcutFirstVisit, setShortcutFirstVisit] = useState(false);
+  const screenReaderLocale =
+    typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh")
+      ? "zh"
+      : "en";
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -156,12 +160,20 @@ export function BulkPage() {
   }, [invalidColumn, invalidSort]);
   const openShortcutHelp = () => {
     setShortcutFirstVisit(false);
-    setShortcutAnnouncement("Keyboard shortcuts opened. Focus moved to the Close button.");
+    setShortcutAnnouncement(
+      screenReaderLocale === "zh"
+        ? "快捷键帮助已打开，焦点已移至关闭按钮。"
+        : "Keyboard shortcuts opened. Focus moved to the Close button."
+    );
     setShortcutHelpOpen(true);
   };
   const closeShortcutHelp = () => {
     setShortcutHelpOpen(false);
-    setShortcutAnnouncement("Keyboard shortcuts closed. Focus returned to the Keyboard shortcuts button.");
+    setShortcutAnnouncement(
+      screenReaderLocale === "zh"
+        ? "快捷键帮助已关闭，焦点已返回快捷键按钮。"
+        : "Keyboard shortcuts closed. Focus returned to the Keyboard shortcuts button."
+    );
     window.requestAnimationFrame(() => shortcutTriggerRef.current?.focus());
   };
   const closeSharePreview = () => {
