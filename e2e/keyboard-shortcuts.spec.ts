@@ -43,3 +43,14 @@ test("mobile Safari remains usable after landscape rotation", async ({ page }, t
   await page.keyboard.press("Escape");
   await expect(menu).toBeFocused();
 });
+
+test("mobile Safari preserves focused input through keyboard-like viewport changes", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-safari", "Mobile Safari-only regression");
+  await page.goto("/bulk-converter");
+  const csvInput = page.locator('textarea[aria-label="CSV text"]');
+  await csvInput.focus();
+  await page.keyboard.insertText("\nkeyboard-input");
+  await page.setViewportSize({ width: 390, height: 520 });
+  await expect(csvInput).toBeFocused();
+  await expect(csvInput).toContainText("keyboard-input");
+});

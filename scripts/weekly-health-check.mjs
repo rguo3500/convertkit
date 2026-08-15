@@ -439,10 +439,12 @@ const routeExportRows = routeDifferenceRows.map(({ route, deltas }) => ({
 }));
 const safeToken = value => String(value || "all").replace(/[^a-zA-Z0-9.-]+/g, "_");
 const commitSha = safeToken(process.env.GITHUB_SHA || "local").slice(0, 7);
-const exportStem = `rum-route-differences-${safeToken(rumHistoryPreset || "all")}-${safeToken(rumHistoryStart || "all")}-${safeToken(rumHistoryEnd || "all")}-${commitSha}`;
+const runTimestamp = started.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+const exportStem = `rum-route-differences-${safeToken(rumHistoryPreset || "all")}-${safeToken(rumHistoryStart || "all")}-${safeToken(rumHistoryEnd || "all")}-${commitSha}-${runTimestamp}`;
 const routeExport = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
+  runTimestamp,
   commitSha,
   preset: rumHistoryPreset || "all",
   windowStart: rumHistoryStart || null,
