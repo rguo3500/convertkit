@@ -71,9 +71,9 @@ VITE_SITE_URL=https://lovexiaoyue.cc.cd pnpm run build
 
 Lighthouse 页面级例外只允许写入 `data/lighthouse-exceptions.json`，每条规则应同时包含 `page`、`metric`、`maxDrop`、`reason` 和 `expiresOn`。过期或 30 天内到期的规则会被写入 `lighthouse-exception-reminders.txt`，并由质量工作流自动创建或更新 `[ConvertKit] Lighthouse exceptions need review` Issue；没有临近到期规则时，下一次质量运行会评论并关闭该 Issue。维护者应在到期前更新基线、修复根因或删除例外，避免长期放宽质量门槛。
 
-每周健康检查可通过 GitHub Actions Secret `CLOUDFLARE_RUM_METRICS_JSON` 接入已核验的 Cloudflare Web Analytics RUM 汇总，格式为 `{"visits":1234,"lcpP75Ms":2100,"inpP75Ms":180,"clsP75":0.08,"windowStart":"2026-08-08T00:00:00Z","windowEnd":"2026-08-15T00:00:00Z","collectedAt":"2026-08-15T00:00:00Z"}`。脚本默认要求采集时间不超过 8 天、时间窗口有效且不晚于当前时间；恢复评论会带出时间范围、数据新鲜度、Visits、LCP P75、INP P75、CLS P75 和采集时间。未配置或 JSON 不合法/过期时明确显示 Not configured 或 STALE_OR_INVALID，不会生成或填充虚假指标。
+每周健康检查可通过 GitHub Actions Secret `CLOUDFLARE_RUM_METRICS_JSON` 接入已核验的 Cloudflare Web Analytics RUM 汇总，格式为 `{"visits":1234,"lcpP75Ms":2100,"inpP75Ms":180,"clsP75":0.08,"windowStart":"2026-08-08T00:00:00Z","windowEnd":"2026-08-15T00:00:00Z","collectedAt":"2026-08-15T00:00:00Z","routes":[{"path":"/bulk-converter","visits":320,"lcpP75Ms":2300,"inpP75Ms":175,"clsP75":0.06}]}`。`routes` 为可选数组，最多保留 20 条合法页面路由；报告会在聚合指标之后展示最新验证快照的路由级 LCP、INP、CLS。脚本默认要求采集时间不超过 8 天、时间窗口有效且不晚于当前时间；恢复评论会带出时间范围、数据新鲜度、Visits、LCP P75、INP P75、CLS P75 和采集时间。未配置或 JSON 不合法/过期时明确显示 Not configured 或 STALE_OR_INVALID，不会生成或填充虚假指标。
 
-质量工作流可通过仓库变量 `LIGHTHOUSE_ISSUE_ASSIGNEE` 配置 GitHub 用户名，例外到期提醒 Issue 会在正文中自动 `@mention` 该负责人；负责人变更会追加到 `Owner history`，包含 UTC 时间戳和前后负责人。批量转换的问题列筛选与排序同步到 `issuesColumn`、`issuesSort` URL 参数，例如 `/bulk-converter?issuesColumn=kilograms&issuesSort=row-desc`，可直接分享并复现当前问题视图；点击清除筛选会移除列参数，恢复默认行号升序时会移除排序参数。
+质量工作流可通过仓库变量 `LIGHTHOUSE_ISSUE_ASSIGNEE` 配置 GitHub 用户名，例外到期提醒 Issue 会在正文中自动 `@mention` 该负责人；负责人变更会追加到 `Owner history`，包含 UTC 时间戳和前后负责人。团队 Webhook 的最近 30 次运行记录会写入 `artifacts/webhook-history.json`，并生成包含提交 SHA、记录时间、保留条数和 SHA-256 摘要的 `artifacts/summary/webhook-audit.json`；Actions cache 用于跨运行恢复，artifact 则作为本次运行的可下载审计证据，二者都不包含 Webhook URL 或密钥。批量转换的问题列筛选与排序同步到 `issuesColumn`、`issuesSort` URL 参数，例如 `/bulk-converter?issuesColumn=kilograms&issuesSort=row-desc`，可直接分享并复现当前问题视图；点击清除筛选会移除列参数，恢复默认行号升序时会移除排序参数。
 
 ## References
 

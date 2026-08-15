@@ -165,7 +165,10 @@ jobs:
                     }
                   }
                 }
+                const crypto = require('crypto');
                 const historyPath = 'artifacts/webhook-history.json';
+                const auditPath = 'artifacts/summary/webhook-audit.json';
+                fs.mkdirSync('artifacts/summary', { recursive: true });
                 fs.mkdirSync('artifacts', { recursive: true });
                 let webhookHistory = [];
                 if (fs.existsSync(historyPath)) {
@@ -185,6 +188,18 @@ jobs:
                   },
                 ].slice(-30);
                 fs.writeFileSync(historyPath, `${JSON.stringify(webhookHistory, null, 2)}\n`);
+                const historyDigest = crypto.createHash('sha256').update(fs.readFileSync(historyPath)).digest('hex');
+                const auditRecord = {
+                  schemaVersion: 1,
+                  runId: context.runId,
+                  recordedAt: new Date().toISOString(),
+                  repository: `${context.repo.owner}/${context.repo.repo}`,
+                  commit: context.sha,
+                  historyDigest,
+                  current: webhookHistory.at(-1),
+                  retainedRuns: webhookHistory.length,
+                };
+                fs.writeFileSync(auditPath, `${JSON.stringify(auditRecord, null, 2)}\n`);
                 const historicalSummary = webhookHistory
                   .slice(-10)
                   .map(item => `${item.recordedAt} · ${item.status} · ${item.failureCategory}`)
@@ -261,6 +276,11 @@ jobs:
               echo "Webhook delivery history:"
               tail -n 80 artifacts/webhook-history.json
             fi
+            if [ -f artifacts/summary/webhook-audit.json ]; then
+              echo ""
+              echo "Webhook audit record:"
+              cat artifacts/summary/webhook-audit.json
+            fi
           } > artifacts/summary/quality-summary.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports
@@ -273,7 +293,8 @@ jobs:
             artifacts/lighthouse/
             artifacts/failures/
             artifacts/summary/
-          if-no-files-found: warn
+            artifacts/webhook-history.json
+            if-no-files-found: warn
           retention-days: 14
 
       - name: Comment quality summary on Pull Request

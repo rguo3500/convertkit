@@ -45,6 +45,7 @@ export function BulkPage() {
   const [shareLinkPreview, setShareLinkPreview] = useState("");
   const [shareSecondsLeft, setShareSecondsLeft] = useState(0);
   const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
+  const [shortcutFirstVisit, setShortcutFirstVisit] = useState(false);
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -55,8 +56,14 @@ export function BulkPage() {
       : "row-asc";
   });
   const csvInputRef = useRef<HTMLTextAreaElement>(null);
+  const shortcutCloseRef = useRef<HTMLButtonElement>(null);
+  const shortcutPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     try {
+      if (!localStorage.getItem("convertkit-shortcuts-seen")) {
+        setShortcutFirstVisit(true);
+        localStorage.setItem("convertkit-shortcuts-seen", "1");
+      }
       setHistory(
         JSON.parse(localStorage.getItem("convertkit-bulk-history") || "[]")
       );
@@ -162,9 +169,37 @@ export function BulkPage() {
     }
   };
   useEffect(() => {
+    if (!shortcutHelpOpen) return;
+    shortcutCloseRef.current?.focus();
+    const handlePanelKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const panel = shortcutPanelRef.current;
+      if (!panel) return;
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const panel = shortcutPanelRef.current;
+    panel?.addEventListener("keydown", handlePanelKeyDown);
+    return () => panel?.removeEventListener("keydown", handlePanelKeyDown);
+  }, [shortcutHelpOpen]);
+  useEffect(() => {
     const handleShortcutHelp = (event: KeyboardEvent) => {
       if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
         event.preventDefault();
+        setShortcutFirstVisit(false);
         setShortcutHelpOpen(true);
       }
       if (event.key === "Escape") setShortcutHelpOpen(false);
@@ -658,13 +693,21 @@ export function BulkPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShortcutHelpOpen(true)}
+                  onClick={() => {
+                    setShortcutFirstVisit(false);
+                    setShortcutHelpOpen(true);
+                  }}
                   aria-expanded={shortcutHelpOpen}
                   aria-controls="bulk-shortcut-help"
                   className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
                 >
                   Keyboard shortcuts
                 </button>
+                {shortcutFirstVisit && !shortcutHelpOpen && (
+                  <span className="text-[10px] text-[#1d56c9]" role="note">
+                    First visit? Press Shift + / for keyboard shortcuts.
+                  </span>
+                )}
                 <span className="text-[10px] text-[#647087]" aria-live="polite">
                   {shareCopyState === "copied"
                     ? `Link copied. Preview hides in ${shareSecondsLeft} seconds. Press Escape or use Close preview to dismiss it.`
@@ -699,6 +742,7 @@ export function BulkPage() {
               </p>
               {shortcutHelpOpen && (
                 <div
+                  ref={shortcutPanelRef}
                   id="bulk-shortcut-help"
                   role="dialog"
                   aria-modal="true"
@@ -710,6 +754,7 @@ export function BulkPage() {
                       Keyboard shortcuts
                     </h3>
                     <button
+                      ref={shortcutCloseRef}
                       type="button"
                       onClick={() => setShortcutHelpOpen(false)}
                       className="text-[10px] font-semibold text-[#536276] underline underline-offset-2 hover:text-[#1d56c9]"

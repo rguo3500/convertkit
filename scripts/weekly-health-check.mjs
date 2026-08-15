@@ -18,6 +18,7 @@ const routes = [
 const started = new Date();
 const rumMaxAgeDays = Number(process.env.CLOUDFLARE_RUM_MAX_AGE_DAYS || 8);
 let rumMetrics = null;
+let rumRouteMetrics = [];
 let rumFreshness = "NOT_CONFIGURED";
 if (process.env.CLOUDFLARE_RUM_METRICS_JSON) {
   try {
@@ -35,6 +36,18 @@ if (process.env.CLOUDFLARE_RUM_METRICS_JSON) {
         collectedAt:
           typeof parsed.collectedAt === "string" ? parsed.collectedAt : null,
       };
+      rumRouteMetrics = Array.isArray(parsed.routes)
+        ? parsed.routes
+            .filter(route => route && typeof route === "object" && typeof route.path === "string")
+            .map(route => ({
+              path: route.path,
+              visits: typeof route.visits === "number" ? route.visits : null,
+              lcpP75Ms: typeof route.lcpP75Ms === "number" ? route.lcpP75Ms : null,
+              inpP75Ms: typeof route.inpP75Ms === "number" ? route.inpP75Ms : null,
+              clsP75: typeof route.clsP75 === "number" ? route.clsP75 : null,
+            }))
+            .slice(0, 20)
+        : [];
       const collectedAt = rumMetrics.collectedAt
         ? Date.parse(rumMetrics.collectedAt)
         : NaN;
@@ -114,6 +127,7 @@ if (rumMetrics && rumFreshness === "FRESH") {
       lcpP75Ms: rumMetrics.lcpP75Ms,
       inpP75Ms: rumMetrics.inpP75Ms,
       clsP75: rumMetrics.clsP75,
+      routes: rumRouteMetrics,
       status: rumFreshness,
     });
     await writeFile(
@@ -190,6 +204,18 @@ const trendLines = trendHistory.length
       "```",
     ]
   : ["No verified RUM snapshots are available yet."];
+const latestRouteMetrics = trendHistory.at(-1)?.routes || rumRouteMetrics;
+const routeTrendLines = latestRouteMetrics.length
+  ? [
+      "## RUM by page route",
+      "",
+      "The latest verified snapshot is split by page route so high-traffic tools can be reviewed independently.",
+      "",
+      "| Route | Visits | LCP P75 | INP P75 | CLS P75 |",
+      "| --- | ---: | --- | --- | --- |",
+      ...latestRouteMetrics.map(route => `| \`${route.path}\` | ${route.visits ?? "n/a"} | ${metricBadge("LCP", route.lcpP75Ms)} ms | ${metricBadge("INP", route.inpP75Ms)} ms | ${metricBadge("CLS", route.clsP75)} |`),
+    ]
+  : ["## RUM by page route", "", "No route-level RUM payload was provided; aggregate metrics remain available above."];
 const mobileTrendHistory = trendHistory.slice(-3);
 const mobileTrendLines = mobileTrendHistory.length
   ? [
@@ -273,6 +299,8 @@ const lines = [
   ...trendLines,
   "",
   ...mobileTrendLines,
+  "",
+  ...routeTrendLines,
   "",
   "## Manual review fields",
   "",
