@@ -51,6 +51,21 @@ export function BulkPage() {
     typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh")
       ? "zh"
       : "en";
+  const a11yLabels = screenReaderLocale === "zh"
+    ? {
+        filter: "按列筛选无效值",
+        sort: "排序无效值",
+        clearFilter: "清除当前列筛选",
+        copyShare: "复制共享问题链接",
+        shortcuts: "打开键盘快捷键帮助",
+      }
+    : {
+        filter: "Filter invalid values by column",
+        sort: "Sort invalid values",
+        clearFilter: "Clear current column filter",
+        copyShare: "Copy share link",
+        shortcuts: "Open keyboard shortcuts help",
+      };
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -668,7 +683,7 @@ export function BulkPage() {
                 <label className="grid gap-1 text-[10px] font-semibold text-[#536276]">
                   Filter by column
                   <select
-                    aria-label="Filter invalid values by column"
+                    aria-label={a11yLabels.filter}
                     value={invalidColumn}
                     onChange={event => setInvalidColumn(event.target.value)}
                     className="border border-[#f0c6a8] bg-white px-2 py-2 text-xs font-normal outline-none focus:border-[#a34d19]"
@@ -684,7 +699,7 @@ export function BulkPage() {
                 <label className="grid gap-1 text-[10px] font-semibold text-[#536276]">
                   Sort issues
                   <select
-                    aria-label="Sort invalid values"
+                    aria-label={a11yLabels.sort}
                     value={invalidSort}
                     onChange={event =>
                       setInvalidSort(event.target.value as InvalidSort)
@@ -703,6 +718,7 @@ export function BulkPage() {
                   type="button"
                   onClick={() => setInvalidColumn("all")}
                   disabled={invalidColumn === "all"}
+                  aria-label={a11yLabels.clearFilter}
                   className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Clear current column filter
@@ -710,6 +726,7 @@ export function BulkPage() {
                 <button
                   type="button"
                   onClick={copyShareLink}
+                  aria-label={a11yLabels.copyShare}
                   className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
                 >
                   Copy share link
@@ -718,6 +735,7 @@ export function BulkPage() {
                   ref={shortcutTriggerRef}
                   type="button"
                   onClick={openShortcutHelp}
+                  aria-label={a11yLabels.shortcuts}
                   aria-expanded={shortcutHelpOpen}
                   aria-controls="bulk-shortcut-help"
                   className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
