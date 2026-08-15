@@ -139,14 +139,28 @@ try {
 } catch {
   trendHistory = [];
 }
+const historyTone = status =>
+  status === "FRESH" ? "GREEN" : status === "STALE_OR_INVALID" ? "AMBER" : "NEUTRAL";
+const toneBadge = tone => {
+  const color = tone === "GREEN" ? "#15803d" : tone === "AMBER" ? "#b45309" : "#64748b";
+  return `<span style="color:${color}"><strong>${tone}</strong></span>`;
+};
+const trendDirection = (current, previous) => {
+  if (!previous) return "BASELINE";
+  if (current === previous) return "STABLE";
+  if (current === "GREEN" && previous === "AMBER") return "IMPROVING";
+  if (current === "AMBER" && previous === "GREEN") return "DEGRADING";
+  return "CHANGED";
+};
 const trendLines = trendHistory.length
   ? [
-      "| Collected at (UTC) | Visits | LCP P75 (ms) | INP P75 (ms) | CLS P75 | Status |",
-      "| --- | ---: | ---: | ---: | ---: | --- |",
-      ...trendHistory.map(
-        item =>
-          `| ${item.collectedAt || "n/a"} | ${item.visits ?? "n/a"} | ${item.lcpP75Ms ?? "n/a"} | ${item.inpP75Ms ?? "n/a"} | ${item.clsP75 ?? "n/a"} | ${item.status || "n/a"} |`
-      ),
+      "| Collected at (UTC) | Visits | LCP P75 (ms) | INP P75 (ms) | CLS P75 | Status | Trend |",
+      "| --- | ---: | ---: | ---: | ---: | --- | --- |",
+      ...trendHistory.map((item, index) => {
+        const tone = historyTone(item.status);
+        const previousTone = index > 0 ? historyTone(trendHistory[index - 1].status) : null;
+        return `| ${item.collectedAt || "n/a"} | ${item.visits ?? "n/a"} | ${item.lcpP75Ms ?? "n/a"} | ${item.inpP75Ms ?? "n/a"} | ${item.clsP75 ?? "n/a"} | ${toneBadge(tone)} | ${trendDirection(tone, previousTone)} |`;
+      }),
       "",
       "```mermaid",
       "xychart-beta",
@@ -253,6 +267,7 @@ const lines = [
   "## RUM trend history",
   "",
   "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
+  "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
   ...trendLines,
   "",

@@ -646,7 +646,7 @@ export function BulkPage() {
                 </button>
                 <span className="text-[10px] text-[#647087]" aria-live="polite">
                   {shareCopyState === "copied"
-                    ? `Link copied. Preview hides in ${shareSecondsLeft} seconds.`
+                    ? `Link copied. Preview hides in ${shareSecondsLeft} seconds. Press Escape or use Close preview to dismiss it.`
                     : shareCopyState === "error"
                       ? "Copy unavailable"
                       : ""}
@@ -672,6 +672,9 @@ export function BulkPage() {
               <p className="mt-2 text-[10px] text-[#647087]">
                 Showing {Math.min(visibleInvalidValues.length, 20)} of{" "}
                 {visibleInvalidValues.length} filtered issues.
+              </p>
+              <p className="mt-1 text-[10px] text-[#647087]">
+                Keyboard shortcut: press Escape to close the share preview.
               </p>
               <div className="mt-2 grid gap-1">
                 {visibleInvalidValues.slice(0, 20).map(item => (
