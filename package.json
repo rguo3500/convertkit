@@ -13,6 +13,8 @@
     "check": "tsc --noEmit",
     "test": "vitest run",
     "audit": "pnpm dlx @lhci/cli autorun",
+    "audit:summary": "node scripts/summarize-lighthouse.mjs",
+    "health:weekly": "node scripts/weekly-health-check.mjs",
     "audit:a11y": "node scripts/a11y-audit.mjs",
     "validate:conversions": "node scripts/validate-conversions.mjs",
     "deploy:cloudflare": "pnpm run build && pnpm dlx wrangler pages deploy dist/public --project-name convertkit",

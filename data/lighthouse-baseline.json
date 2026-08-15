@@ -1,0 +1,38 @@
+{
+  "/": {
+    "performance": 0.63,
+    "accessibility": 0.88,
+    "best-practices": 0.78,
+    "seo": 1
+  },
+  "/converters": {
+    "performance": 0.71,
+    "accessibility": 0.88,
+    "best-practices": 0.78,
+    "seo": 1
+  },
+  "/format-converters": {
+    "performance": 0.58,
+    "accessibility": 0.87,
+    "best-practices": 0.78,
+    "seo": 1
+  },
+  "/meters-to-feet": {
+    "performance": 0.71,
+    "accessibility": 0.88,
+    "best-practices": 0.78,
+    "seo": 1
+  },
+  "/bulk-converter": {
+    "performance": 0.71,
+    "accessibility": 0.88,
+    "best-practices": 0.78,
+    "seo": 1
+  },
+  "/pricing": {
+    "performance": 0.71,
+    "accessibility": 0.87,
+    "best-practices": 0.78,
+    "seo": 1
+  }
+}

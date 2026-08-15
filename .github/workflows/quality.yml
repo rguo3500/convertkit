@@ -59,6 +59,9 @@ jobs:
         run: pnpm run audit:a11y
       - name: Lighthouse CI
         run: pnpm run audit
+      - name: Summarize Lighthouse scores
+        if: always()
+        run: pnpm run audit:summary
       - name: Capture failure diagnostics
         if: failure()
         shell: bash
@@ -97,6 +100,10 @@ jobs:
             echo "job_status=${{ job.status }}"
             if [ -f /tmp/convertkit-test.log ]; then grep -E 'Tests +[0-9]+ passed|Test Files +[0-9]+ passed' /tmp/convertkit-test.log || true; fi
             if [ -f /tmp/convertkit-timing.log ]; then cat /tmp/convertkit-timing.log; fi
+            if [ -f artifacts/summary/lighthouse-summary.md ]; then
+              echo ""
+              cat artifacts/summary/lighthouse-summary.md
+            fi
           } > artifacts/summary/quality-summary.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports

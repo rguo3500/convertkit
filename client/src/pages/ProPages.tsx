@@ -78,6 +78,42 @@ export function BulkPage() {
     (sum, stats) => sum + stats.invalid,
     0
   );
+  const invalidValues = useMemo(
+    () =>
+      activeMappings.flatMap(mapping =>
+        parsed.rows.flatMap((row, rowIndex) => {
+          const rawValue = row[mapping.index] ?? "";
+          if (!rawValue.trim() || Number.isFinite(Number(rawValue))) return [];
+          const selected = unitOptions[mapping.pair];
+          return [
+            {
+              rowNumber: rowIndex + 2,
+              column: parsed.headers[mapping.index],
+              rawValue,
+              conversion: `${selected[1]} → ${selected[3]}`,
+              outputColumn:
+                mapping.outputName.trim() ||
+                `${parsed.headers[mapping.index]} (${selected[3]})`,
+            },
+          ];
+        })
+      ),
+    [activeMappings, parsed]
+  );
+  const invalidReport = useMemo(
+    () =>
+      serializeCsv(
+        ["row", "column", "raw_value", "conversion", "output_column"],
+        invalidValues.map(item => [
+          String(item.rowNumber),
+          item.column,
+          item.rawValue,
+          item.conversion,
+          item.outputColumn,
+        ])
+      ),
+    [invalidValues]
+  );
   const result = useMemo(() => {
     if (!parsed.headers.length) return "";
     const outputHeaders = [
@@ -152,6 +188,20 @@ export function BulkPage() {
     setFileName("");
     setFileSize(0);
     setFileError("");
+  };
+  const downloadInvalidReport = () => {
+    if (
+      !invalidValues.length ||
+      readState === "reading" ||
+      readState === "error"
+    )
+      return;
+    const blob = new Blob([invalidReport], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "convertkit-invalid-values.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
   const download = () => {
     if (!result || readState === "reading" || readState === "error") return;
@@ -379,6 +429,17 @@ export function BulkPage() {
                 : "All mapped values are numeric"}
             </span>
           </div>
+          <button
+            onClick={downloadInvalidReport}
+            disabled={
+              !invalidValues.length ||
+              readState === "reading" ||
+              readState === "error"
+            }
+            className="mt-3 flex items-center gap-2 border border-[#a34d19] px-5 py-3 text-sm font-semibold text-[#a34d19] hover:bg-[#fff7ed] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <FileWarning size={15} /> Download invalid value report
+          </button>
           <button
             onClick={download}
             disabled={

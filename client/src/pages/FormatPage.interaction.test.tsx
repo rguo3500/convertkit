@@ -91,6 +91,28 @@ describe("format tool interactions", () => {
     expect(screen.getByText("1 invalid values will remain blank")).toBeTruthy();
   });
 
+  it("downloads an invalid value report with row and column details", async () => {
+    const user = userEvent.setup();
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
+    URL.createObjectURL = vi.fn(() => "blob:invalid-values");
+    URL.revokeObjectURL = vi.fn();
+    render(<BulkPage />);
+    const csvInput = screen.getByRole("textbox", { name: "CSV text" });
+    await user.clear(csvInput);
+    fireEvent.change(csvInput, {
+      target: { value: "value\nnot-a-number" },
+    });
+    const reportButton = screen.getByRole("button", {
+      name: "Download invalid value report",
+    });
+    expect(reportButton).not.toHaveProperty("disabled", true);
+    await user.click(reportButton);
+    expect(clickSpy).toHaveBeenCalled();
+    expect(URL.createObjectURL).toHaveBeenCalled();
+  });
+
   it("imports a CSV file and exposes the converted download action", async () => {
     const user = userEvent.setup();
     const clickSpy = vi
