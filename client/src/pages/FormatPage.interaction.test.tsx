@@ -232,5 +232,8 @@ describe("keyboard accessibility regression", () => {
     await user.click(trigger);
     const close = screen.getByRole("button", { name: "Close" });
     expect(close.className).toContain("focus-visible:outline");
+
+    await user.keyboard("{Escape}");
+    expect(document.activeElement).toBe(trigger);
   });
 });

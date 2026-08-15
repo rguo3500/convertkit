@@ -184,18 +184,40 @@ const comparisonDelta = (current, baseline, suffix = "") => {
 const comparisonSummary = comparisonCurrent && comparisonBaseline
   ? `Window comparison: LCP ${comparisonDelta(comparisonCurrent.lcpP75Ms, comparisonBaseline.lcpP75Ms, " ms")}, INP ${comparisonDelta(comparisonCurrent.inpP75Ms, comparisonBaseline.inpP75Ms, " ms")}, CLS ${comparisonDelta(comparisonCurrent.clsP75, comparisonBaseline.clsP75)} versus the previous verified window.`
   : "Window comparison: baseline unavailable; at least two comparable verified snapshots are required.";
+const routeSort = ["path", "lcp", "inp", "cls"].includes(process.env.CLOUDFLARE_RUM_ROUTE_SORT || "")
+  ? process.env.CLOUDFLARE_RUM_ROUTE_SORT
+  : "path";
+const routeMinDelta = Number.isFinite(Number(process.env.CLOUDFLARE_RUM_ROUTE_MIN_DELTA))
+  ? Math.max(0, Number(process.env.CLOUDFLARE_RUM_ROUTE_MIN_DELTA))
+  : 0;
+const routeDifferenceRows = comparisonCurrent && comparisonBaseline && Array.isArray(comparisonCurrent.routes)
+  ? comparisonCurrent.routes.slice(0, 20).map(route => {
+      const baselineRoute = Array.isArray(comparisonBaseline.routes)
+        ? comparisonBaseline.routes.find(item => item.path === route.path)
+        : null;
+      const deltas = {
+        lcp: comparisonDelta(route.lcpP75Ms, baselineRoute?.lcpP75Ms, " ms"),
+        inp: comparisonDelta(route.inpP75Ms, baselineRoute?.inpP75Ms, " ms"),
+        cls: comparisonDelta(route.clsP75, baselineRoute?.clsP75),
+      };
+      const magnitude = Math.max(
+        ...[deltas.lcp, deltas.inp, deltas.cls].map(value => Math.abs(Number.parseFloat(value) || 0)),
+      );
+      return { route, deltas, magnitude };
+    }).filter(row => row.magnitude >= routeMinDelta).sort((a, b) => {
+      if (routeSort === "path") return a.route.path.localeCompare(b.route.path);
+      const metricDelta = routeSort === "lcp" ? "lcp" : routeSort === "inp" ? "inp" : "cls";
+      return (Number.parseFloat(b.deltas[metricDelta]) || 0) - (Number.parseFloat(a.deltas[metricDelta]) || 0);
+    })
+  : [];
 const routeDifferenceLines = comparisonCurrent && comparisonBaseline && Array.isArray(comparisonCurrent.routes)
   ? [
       "### Route window comparison",
       "",
       "| Route | LCP Δ (ms) | INP Δ (ms) | CLS Δ |",
       "| --- | ---: | ---: | ---: |",
-      ...comparisonCurrent.routes.slice(0, 20).map(route => {
-        const baselineRoute = Array.isArray(comparisonBaseline.routes)
-          ? comparisonBaseline.routes.find(item => item.path === route.path)
-          : null;
-        return `| \`${route.path}\` | ${comparisonDelta(route.lcpP75Ms, baselineRoute?.lcpP75Ms)} | ${comparisonDelta(route.inpP75Ms, baselineRoute?.inpP75Ms)} | ${comparisonDelta(route.clsP75, baselineRoute?.clsP75)} |`;
-      }),
+      `Filter: sort=${routeSort}, min absolute delta=${routeMinDelta}.`,
+      ...routeDifferenceRows.map(({ route, deltas }) => `| \`${route.path}\` | ${deltas.lcp} | ${deltas.inp} | ${deltas.cls} |`),
     ]
   : ["### Route window comparison", "", "No comparable route-level baseline is available."];
 const metricTone = (metric, value) => {

@@ -327,6 +327,10 @@ jobs:
             done
           } > artifacts/summary/artifact-index.md
 
+      - name: Validate webhook audit schema
+        if: always()
+        run: node scripts/validate-webhook-audit.mjs artifacts/summary/webhook-audit.json
+
       - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
         uses: actions/upload-artifact@v4

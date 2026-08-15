@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮差异筛选与焦点回归完善
+- [x] 设计路由差异排序和变化幅度筛选模型
+- [x] 实现指标排序与幅度筛选
+- [x] 增加 failureTrend schema 校验测试
+- [x] 覆盖 Escape 关闭后的焦点返回
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮路由差异与快捷键测试完善
 - [x] 设计按路由 RUM 窗口差异数据模型
 - [x] 实现路由级 LCP、INP、CLS 差异表

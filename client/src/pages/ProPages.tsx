@@ -189,7 +189,7 @@ export function BulkPage() {
         ? "快捷键帮助已关闭，焦点已返回快捷键按钮。"
         : "Keyboard shortcuts closed. Focus returned to the Keyboard shortcuts button."
     );
-    window.requestAnimationFrame(() => shortcutTriggerRef.current?.focus());
+    shortcutTriggerRef.current?.focus();
   };
   const closeSharePreview = () => {
     setShareCopyState("idle");
@@ -244,7 +244,7 @@ export function BulkPage() {
     };
     window.addEventListener("keydown", handleShortcutHelp);
     return () => window.removeEventListener("keydown", handleShortcutHelp);
-  }, []);
+  }, [shortcutHelpOpen]);
   useEffect(() => {
     if (shareCopyState !== "copied") return;
     const handleKeyDown = (event: KeyboardEvent) => {
