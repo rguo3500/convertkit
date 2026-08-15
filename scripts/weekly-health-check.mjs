@@ -175,6 +175,8 @@ const mobileTrendLines = mobileTrendHistory.length
   ? [
       "### Mobile summary",
       "",
+      "Metrics are ordered by review priority: **LCP P75 → INP P75 → CLS**.",
+      "",
       "| # | LCP | INP | CLS | Status |",
       "| ---: | ---: | ---: | ---: | --- |",
       ...mobileTrendHistory.map(

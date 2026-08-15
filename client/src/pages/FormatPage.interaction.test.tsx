@@ -151,6 +151,12 @@ describe("format tool interactions", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close preview" }));
     expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();
     await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Copy share link" }));
+      await Promise.resolve();
+    });
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();
+    await act(async () => {
       vi.advanceTimersByTime(5000);
     });
     expect(

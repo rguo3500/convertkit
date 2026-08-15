@@ -159,11 +159,15 @@ export function BulkPage() {
   };
   useEffect(() => {
     if (shareCopyState !== "copied") return;
-    const timer = window.setTimeout(() => {
-      setShareCopyState("idle");
-      setShareLinkPreview("");
-    }, 5000);
-    return () => window.clearTimeout(timer);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeSharePreview();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const timer = window.setTimeout(closeSharePreview, 5000);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.clearTimeout(timer);
+    };
   }, [shareCopyState]);
   const visibleInvalidValues = useMemo(() => {
     const filtered =
