@@ -216,6 +216,40 @@ const routeTrendLines = latestRouteMetrics.length
       ...latestRouteMetrics.map(route => `| \`${route.path}\` | ${route.visits ?? "n/a"} | ${metricBadge("LCP", route.lcpP75Ms)} ms | ${metricBadge("INP", route.inpP75Ms)} ms | ${metricBadge("CLS", route.clsP75)} |`),
     ]
   : ["## RUM by page route", "", "No route-level RUM payload was provided; aggregate metrics remain available above."];
+const routePaths = Array.from(
+  new Set(trendHistory.flatMap(snapshot => (Array.isArray(snapshot.routes) ? snapshot.routes : []).map(route => route.path)))
+).slice(0, 6);
+const routeHistoryLines = routePaths.length
+  ? [
+      "### Route-level RUM history",
+      "",
+      "Each route chart compares verified LCP and INP P75 snapshots; the companion table carries CLS because its scale differs from milliseconds.",
+      "",
+      ...routePaths.flatMap(path => {
+        const routeSnapshots = trendHistory.map((snapshot, index) => ({
+          index: index + 1,
+          ...(Array.isArray(snapshot.routes) ? snapshot.routes.find(route => route.path === path) : {}),
+        }));
+        return [
+          `#### \`${path}\``,
+          "",
+          "```mermaid",
+          "xychart-beta",
+          `  title \"${path.replaceAll('\\"', '')} — LCP / INP P75\"`,
+          "  x-axis [" + routeSnapshots.map(item => `\\"${item.index}\\"`).join(", ") + "]",
+          '  y-axis "Milliseconds" 0 --> ' + Math.max(...routeSnapshots.map(item => Math.max(item.lcpP75Ms || 0, item.inpP75Ms || 0)), 1),
+          "  line [" + routeSnapshots.map(item => item.lcpP75Ms ?? 0).join(", ") + "]",
+          "  line [" + routeSnapshots.map(item => item.inpP75Ms ?? 0).join(", ") + "]",
+          "```",
+          "",
+          "| Snapshot | Visits | CLS P75 | LCP tone | INP tone |",
+          "| ---: | ---: | --- | --- | --- |",
+          ...routeSnapshots.map(item => `| ${item.index} | ${item.visits ?? "n/a"} | ${metricBadge("CLS", item.clsP75)} | ${toneBadge(metricTone("LCP", item.lcpP75Ms))} | ${toneBadge(metricTone("INP", item.inpP75Ms))} |`),
+          "",
+        ];
+      }),
+    ]
+  : ["### Route-level RUM history", "", "No route-level history is available yet."];
 const mobileTrendHistory = trendHistory.slice(-3);
 const mobileTrendLines = mobileTrendHistory.length
   ? [
@@ -301,6 +335,8 @@ const lines = [
   ...mobileTrendLines,
   "",
   ...routeTrendLines,
+  "",
+  ...routeHistoryLines,
   "",
   "## Manual review fields",
   "",

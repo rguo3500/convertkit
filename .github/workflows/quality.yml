@@ -281,7 +281,34 @@ jobs:
               echo "Webhook audit record:"
               cat artifacts/summary/webhook-audit.json
             fi
+            if [ -f artifacts/summary/artifact-index.md ]; then
+              echo ""
+              cat artifacts/summary/artifact-index.md
+            fi
           } > artifacts/summary/quality-summary.txt
+
+      - name: Generate artifact download index
+        if: always()
+        shell: bash
+        env:
+          ARTIFACT_RETENTION_DAYS: ${{ vars.QUALITY_ARTIFACT_RETENTION_DAYS || 30 }}
+        run: |
+          mkdir -p artifacts/summary
+          {
+            echo "# ConvertKit quality artifact index"
+            echo ""
+            echo "- Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Retention days: ${ARTIFACT_RETENTION_DAYS}"
+            echo ""
+            echo "| File | Bytes | SHA-256 |"
+            echo "| --- | ---: | --- |"
+            find artifacts -type f -not -path 'artifacts/summary/artifact-index.md' -print0 | sort -z | while IFS= read -r -d '' file; do
+              bytes=$(wc -c < "$file" | tr -d ' ')
+              digest=$(sha256sum "$file" | cut -d ' ' -f1)
+              echo "| \\`${file}\\` | ${bytes} | \\`${digest}\\` |"
+            done
+          } > artifacts/summary/artifact-index.md
 
       - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
@@ -295,7 +322,7 @@ jobs:
             artifacts/summary/
             artifacts/webhook-history.json
             if-no-files-found: warn
-          retention-days: 14
+          retention-days: ${{ vars.QUALITY_ARTIFACT_RETENTION_DAYS || 30 }}
 
       - name: Comment quality summary on Pull Request
         if: always() && github.event_name == 'pull_request'

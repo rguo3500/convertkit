@@ -57,6 +57,7 @@ export function BulkPage() {
   });
   const csvInputRef = useRef<HTMLTextAreaElement>(null);
   const shortcutCloseRef = useRef<HTMLButtonElement>(null);
+  const shortcutTriggerRef = useRef<HTMLButtonElement>(null);
   const shortcutPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     try {
@@ -152,6 +153,10 @@ export function BulkPage() {
       `${url.pathname}${url.search}${url.hash}`
     );
   }, [invalidColumn, invalidSort]);
+  const closeShortcutHelp = () => {
+    setShortcutHelpOpen(false);
+    window.requestAnimationFrame(() => shortcutTriggerRef.current?.focus());
+  };
   const closeSharePreview = () => {
     setShareCopyState("idle");
     setShareLinkPreview("");
@@ -202,7 +207,7 @@ export function BulkPage() {
         setShortcutFirstVisit(false);
         setShortcutHelpOpen(true);
       }
-      if (event.key === "Escape") setShortcutHelpOpen(false);
+      if (event.key === "Escape") closeShortcutHelp();
     };
     window.addEventListener("keydown", handleShortcutHelp);
     return () => window.removeEventListener("keydown", handleShortcutHelp);
@@ -692,6 +697,7 @@ export function BulkPage() {
                   Copy share link
                 </button>
                 <button
+                  ref={shortcutTriggerRef}
                   type="button"
                   onClick={() => {
                     setShortcutFirstVisit(false);
@@ -756,7 +762,7 @@ export function BulkPage() {
                     <button
                       ref={shortcutCloseRef}
                       type="button"
-                      onClick={() => setShortcutHelpOpen(false)}
+                      onClick={closeShortcutHelp}
                       className="text-[10px] font-semibold text-[#536276] underline underline-offset-2 hover:text-[#1d56c9]"
                     >
                       Close
