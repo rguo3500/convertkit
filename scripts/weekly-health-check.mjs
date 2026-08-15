@@ -13,6 +13,26 @@ const routes = [
   "/json-formatter",
 ];
 const started = new Date();
+let rumMetrics = null;
+if (process.env.CLOUDFLARE_RUM_METRICS_JSON) {
+  try {
+    const parsed = JSON.parse(process.env.CLOUDFLARE_RUM_METRICS_JSON);
+    if (parsed && typeof parsed === "object") {
+      rumMetrics = {
+        visits: typeof parsed.visits === "number" ? parsed.visits : null,
+        lcpP75Ms: typeof parsed.lcpP75Ms === "number" ? parsed.lcpP75Ms : null,
+        inpP75Ms: typeof parsed.inpP75Ms === "number" ? parsed.inpP75Ms : null,
+        clsP75: typeof parsed.clsP75 === "number" ? parsed.clsP75 : null,
+        collectedAt:
+          typeof parsed.collectedAt === "string"
+            ? parsed.collectedAt
+            : "not provided",
+      };
+    }
+  } catch {
+    rumMetrics = null;
+  }
+}
 
 async function check(path) {
   const url = new URL(path, site).toString();
@@ -80,6 +100,21 @@ const lines = [
   "",
   `- Sitemap contains production hostname: **${sitemapHasProductionHost ? "PASS" : "REVIEW"}**`,
   `- Robots declares production Sitemap URL: **${robotsHasSitemap ? "PASS" : "REVIEW"}**`,
+  "",
+  "## Cloudflare Web Analytics RUM",
+  "",
+  rumMetrics
+    ? `- Source: **Cloudflare Web Analytics** (provided by the configured RUM exporter)`
+    : "- Status: **Not configured** — set `CLOUDFLARE_RUM_METRICS_JSON` in the scheduled workflow to include verified RUM data.",
+  ...(rumMetrics
+    ? [
+        `- Visits: **${rumMetrics.visits ?? "n/a"}**`,
+        `- LCP P75: **${rumMetrics.lcpP75Ms ?? "n/a"} ms**`,
+        `- INP P75: **${rumMetrics.inpP75Ms ?? "n/a"} ms**`,
+        `- CLS P75: **${rumMetrics.clsP75 ?? "n/a"}**`,
+        `- Collected at: **${rumMetrics.collectedAt}**`,
+      ]
+    : []),
   "",
   "## Manual review fields",
   "",

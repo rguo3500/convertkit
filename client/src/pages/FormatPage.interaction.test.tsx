@@ -115,6 +115,10 @@ describe("format tool interactions", () => {
     });
     await user.selectOptions(columnFilter, "kilograms");
     expect(screen.getByText("Showing 2 of 2 filtered issues.")).toBeTruthy();
+    await user.click(
+      screen.getByRole("button", { name: "Clear current column filter" })
+    );
+    expect((columnFilter as HTMLSelectElement).value).toBe("all");
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Sort invalid values" }),
       "row-desc"

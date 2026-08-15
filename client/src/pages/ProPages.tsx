@@ -561,6 +561,14 @@ export function BulkPage() {
                   </select>
                 </label>
               </div>
+              <button
+                type="button"
+                onClick={() => setInvalidColumn("all")}
+                disabled={invalidColumn === "all"}
+                className="mt-2 border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Clear current column filter
+              </button>
               <p className="mt-2 text-[10px] text-[#647087]">
                 Showing {Math.min(visibleInvalidValues.length, 20)} of{" "}
                 {visibleInvalidValues.length} filtered issues.

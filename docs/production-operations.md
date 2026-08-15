@@ -69,7 +69,9 @@ VITE_SITE_URL=https://lovexiaoyue.cc.cd pnpm run build
 
 生产域名每次发布后，至少抽查首页、一个 conversion pair、格式工具、批量转换页、`robots.txt` 和 `sitemap.xml`。如果页面返回 200 但 Sitemap 仍包含旧域名，应优先检查 Cloudflare Pages 构建环境中的 `VITE_SITE_URL`，然后重新部署。
 
-Lighthouse 页面级例外只允许写入 `data/lighthouse-exceptions.json`，每条规则应同时包含 `page`、`metric`、`maxDrop`、`reason` 和 `expiresOn`。过期或 30 天内到期的规则会被写入 `lighthouse-exception-reminders.txt`，维护者应在到期前更新基线、修复根因或删除例外，避免长期放宽质量门槛。
+Lighthouse 页面级例外只允许写入 `data/lighthouse-exceptions.json`，每条规则应同时包含 `page`、`metric`、`maxDrop`、`reason` 和 `expiresOn`。过期或 30 天内到期的规则会被写入 `lighthouse-exception-reminders.txt`，并由质量工作流自动创建或更新 `[ConvertKit] Lighthouse exceptions need review` Issue；没有临近到期规则时，下一次质量运行会评论并关闭该 Issue。维护者应在到期前更新基线、修复根因或删除例外，避免长期放宽质量门槛。
+
+每周健康检查可通过 GitHub Actions Secret `CLOUDFLARE_RUM_METRICS_JSON` 接入已核验的 Cloudflare Web Analytics RUM 汇总，格式为 `{"visits":1234,"lcpP75Ms":2100,"inpP75Ms":180,"clsP75":0.08,"collectedAt":"2026-08-15T00:00:00Z"}`。脚本会在恢复评论中带出 Visits、LCP P75、INP P75、CLS P75 和采集时间；未配置或 JSON 不合法时明确显示 Not configured，不会生成或填充虚假指标。
 
 ## References
 

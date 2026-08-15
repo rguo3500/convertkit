@@ -3,6 +3,7 @@ name: ConvertKit quality
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 on:
   push:
@@ -65,6 +66,33 @@ jobs:
       - name: Check Lighthouse regression thresholds
         if: always()
         run: pnpm run audit:regression
+      - name: Manage Lighthouse exception reminder
+        if: always()
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- convertkit-lighthouse-exception-reminder -->';
+            const path = 'artifacts/summary/lighthouse-exception-reminders.txt';
+            const report = fs.existsSync(path) ? fs.readFileSync(path, 'utf8').trim() : '';
+            const hasReminder = report && !report.includes('No Lighthouse exceptions expire within 30 days.');
+            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            const existing = issues.find(issue => !issue.pull_request && issue.body?.includes(marker));
+            const labels = ['quality-check', 'maintenance'];
+            if (hasReminder) {
+              for (const name of labels) {
+                try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name }); }
+                catch { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: name === 'quality-check' ? '1D56C9' : 'FBCA04' }); }
+              }
+              const body = `${marker}\n## ConvertKit Lighthouse exception reminder\n\nReview the expiring exception rules in the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) and uploaded quality artifact.\n\n\`\`\`text\n${report}\n\`\`\``;
+              if (existing) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body, labels });
+              else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: '[ConvertKit] Lighthouse exceptions need review', body, labels });
+            } else if (existing) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body: `No Lighthouse exception expires within 30 days in [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).` });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, state: 'closed' });
+            }
       - name: Capture failure diagnostics
         if: failure()
         shell: bash

@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮监控闭环完善
+- [x] 设计清除当前列筛选交互
+- [x] 实现清除筛选并补充交互测试
+- [x] 创建 Lighthouse 例外到期提醒 Issue
+- [x] 为恢复摘要预留 Cloudflare Web Analytics 指标
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮持续运营体验完善
 - [x] 设计“仅显示当前列”快捷筛选行为
 - [x] 实现快捷筛选并补充交互测试
