@@ -204,6 +204,18 @@ jobs:
                   .slice(-10)
                   .map(item => `${item.recordedAt} · ${item.status} · ${item.failureCategory}`)
                   .join('; ') || 'none';
+                const failureTrend = {};
+                for (const item of webhookHistory.slice(-10)) {
+                  for (const [bucket, count] of Object.entries(item.failureBuckets || {})) {
+                    const entry = failureTrend[bucket] || { count: 0, lastSeen: null };
+                    entry.count += Number(count) || 0;
+                    if (item.recordedAt && (!entry.lastSeen || item.recordedAt > entry.lastSeen)) entry.lastSeen = item.recordedAt;
+                    failureTrend[bucket] = entry;
+                  }
+                }
+                const failureTrendSummary = Object.entries(failureTrend)
+                  .map(([bucket, entry]) => `${bucket}: ${entry.count} total; last ${entry.lastSeen || 'unknown'}`)
+                  .join('; ') || 'none';
                 await core.summary
                   .addHeading('Team webhook delivery')
                   .addTable([
@@ -214,6 +226,7 @@ jobs:
                     ['Backoff cap', backoffCapMs ? `${backoffCapMs} ms` : 'n/a'],
                     ['Failure time buckets (UTC)', Object.entries(webhookFailureBuckets).map(([bucket, count]) => `${bucket}: ${count}`).join('; ') || 'none'],
                     ['Historical runs (latest 10)', historicalSummary],
+                    ['Failure trend (latest 10)', failureTrendSummary],
                   ])
                   .write();
               }

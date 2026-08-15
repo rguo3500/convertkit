@@ -153,6 +153,7 @@ try {
 } catch {
   trendHistory = [];
 }
+const allTrendHistory = [...trendHistory];
 const rumHistoryPreset = process.env.CLOUDFLARE_RUM_HISTORY_PRESET || "";
 const presetDays = rumHistoryPreset === "7d" ? 7 : rumHistoryPreset === "30d" ? 30 : null;
 const rumHistoryStart = process.env.CLOUDFLARE_RUM_HISTORY_START_DATE || (presetDays ? new Date(started.getTime() - presetDays * 86_400_000).toISOString().slice(0, 10) : "");
@@ -171,6 +172,18 @@ const historyFilterSummary = hasValidHistoryRange
   : rumHistoryStart || rumHistoryEnd
     ? "History filter: **ignored** because the configured UTC dates are invalid or reversed."
     : "History filter: **all available** (latest 12 verified snapshots).";
+const comparisonCurrent = trendHistory.at(-1);
+const comparisonBaseline = hasValidHistoryRange
+  ? allTrendHistory.find(item => Date.parse(item.collectedAt || "") < startTime)
+  : allTrendHistory.at(-2);
+const comparisonDelta = (current, baseline, suffix = "") => {
+  if (typeof current !== "number" || typeof baseline !== "number") return "n/a";
+  const delta = current - baseline;
+  return `${delta > 0 ? "+" : ""}${Number(delta.toFixed(3))}${suffix}`;
+};
+const comparisonSummary = comparisonCurrent && comparisonBaseline
+  ? `Window comparison: LCP ${comparisonDelta(comparisonCurrent.lcpP75Ms, comparisonBaseline.lcpP75Ms, " ms")}, INP ${comparisonDelta(comparisonCurrent.inpP75Ms, comparisonBaseline.inpP75Ms, " ms")}, CLS ${comparisonDelta(comparisonCurrent.clsP75, comparisonBaseline.clsP75)} versus the previous verified window.`
+  : "Window comparison: baseline unavailable; at least two comparable verified snapshots are required.";
 const metricTone = (metric, value) => {
   if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
   const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
@@ -351,6 +364,7 @@ const lines = [
   `Window end (UTC): **${rumHistoryEnd || "all available"}**.`,
   "Timezone: **UTC**.",
   historyFilterSummary,
+  comparisonSummary,
   "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are GREEN; higher values are AMBER. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
   ...trendLines,
