@@ -408,3 +408,10 @@
 - [x] 复核 Cloudflare Managed robots 内容及外部审核结果
 - [x] 按结果调整 Lighthouse 严格阻断开关
 - [x] 执行真实 CI 与本地全量验证并保存 checkpoint
+
+
+## 本轮严格门禁条件复核
+- [x] 核验 GitHub 管理权限与 RUM 签名状态
+- [x] 核验 Cloudflare Managed robots 外部审核条件
+- [x] 按条件启用或保持 Lighthouse 严格阻断
+- [x] 执行完整验证并保存 checkpoint
