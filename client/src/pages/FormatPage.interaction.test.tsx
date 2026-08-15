@@ -110,6 +110,7 @@ describe("format tool interactions", () => {
         }) as HTMLSelectElement
       ).value
     ).toBe("meters");
+    expect(window.location.search).toContain("issuesColumn=meters");
     const columnFilter = screen.getByRole("combobox", {
       name: "Filter invalid values by column",
     });
@@ -119,6 +120,7 @@ describe("format tool interactions", () => {
       screen.getByRole("button", { name: "Clear current column filter" })
     );
     expect((columnFilter as HTMLSelectElement).value).toBe("all");
+    expect(window.location.search).not.toContain("issuesColumn=");
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Sort invalid values" }),
       "row-desc"

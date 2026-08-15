@@ -13,7 +13,9 @@ const routes = [
   "/json-formatter",
 ];
 const started = new Date();
+const rumMaxAgeDays = Number(process.env.CLOUDFLARE_RUM_MAX_AGE_DAYS || 8);
 let rumMetrics = null;
+let rumFreshness = "NOT_CONFIGURED";
 if (process.env.CLOUDFLARE_RUM_METRICS_JSON) {
   try {
     const parsed = JSON.parse(process.env.CLOUDFLARE_RUM_METRICS_JSON);
@@ -23,11 +25,38 @@ if (process.env.CLOUDFLARE_RUM_METRICS_JSON) {
         lcpP75Ms: typeof parsed.lcpP75Ms === "number" ? parsed.lcpP75Ms : null,
         inpP75Ms: typeof parsed.inpP75Ms === "number" ? parsed.inpP75Ms : null,
         clsP75: typeof parsed.clsP75 === "number" ? parsed.clsP75 : null,
+        windowStart:
+          typeof parsed.windowStart === "string" ? parsed.windowStart : null,
+        windowEnd:
+          typeof parsed.windowEnd === "string" ? parsed.windowEnd : null,
         collectedAt:
-          typeof parsed.collectedAt === "string"
-            ? parsed.collectedAt
-            : "not provided",
+          typeof parsed.collectedAt === "string" ? parsed.collectedAt : null,
       };
+      const collectedAt = rumMetrics.collectedAt
+        ? Date.parse(rumMetrics.collectedAt)
+        : NaN;
+      const windowStart = rumMetrics.windowStart
+        ? Date.parse(rumMetrics.windowStart)
+        : NaN;
+      const windowEnd = rumMetrics.windowEnd
+        ? Date.parse(rumMetrics.windowEnd)
+        : NaN;
+      const ageDays = Number.isFinite(collectedAt)
+        ? (started.getTime() - collectedAt) / 86_400_000
+        : Infinity;
+      rumMetrics.ageDays = Number.isFinite(ageDays)
+        ? Math.round(ageDays * 10) / 10
+        : null;
+      rumFreshness =
+        Number.isFinite(collectedAt) &&
+        Number.isFinite(windowStart) &&
+        Number.isFinite(windowEnd) &&
+        windowStart < windowEnd &&
+        windowEnd <= started.getTime() + 300_000 &&
+        ageDays >= -0.25 &&
+        ageDays <= rumMaxAgeDays
+          ? "FRESH"
+          : "STALE_OR_INVALID";
     }
   } catch {
     rumMetrics = null;
@@ -78,7 +107,8 @@ const sitemapHasProductionHost =
 const robotsHasSitemap = robots?.body.includes(`${site}/sitemap.xml`) ?? false;
 const allHttpOk = checks.every(item => item.ok);
 const seoOk = sitemapHasProductionHost && robotsHasSitemap;
-const overall = allHttpOk && seoOk ? "PASS" : "REVIEW";
+const rumNeedsReview = rumFreshness === "STALE_OR_INVALID";
+const overall = allHttpOk && seoOk && !rumNeedsReview ? "PASS" : "REVIEW";
 
 const lines = [
   "# ConvertKit weekly health check",
@@ -108,11 +138,17 @@ const lines = [
     : "- Status: **Not configured** — set `CLOUDFLARE_RUM_METRICS_JSON` in the scheduled workflow to include verified RUM data.",
   ...(rumMetrics
     ? [
+        `- Data freshness: **${rumFreshness}** (maximum age: ${rumMaxAgeDays} days)`,
+        `- Reporting window: **${rumMetrics.windowStart || "n/a"} → ${rumMetrics.windowEnd || "n/a"}**`,
+        `- Collected at: **${rumMetrics.collectedAt || "n/a"}** (${rumMetrics.ageDays ?? "n/a"} days old)`,
+      ]
+    : []),
+  ...(rumMetrics
+    ? [
         `- Visits: **${rumMetrics.visits ?? "n/a"}**`,
         `- LCP P75: **${rumMetrics.lcpP75Ms ?? "n/a"} ms**`,
         `- INP P75: **${rumMetrics.inpP75Ms ?? "n/a"} ms**`,
         `- CLS P75: **${rumMetrics.clsP75 ?? "n/a"}**`,
-        `- Collected at: **${rumMetrics.collectedAt}**`,
       ]
     : []),
   "",

@@ -33,6 +33,7 @@ jobs:
         env:
           SITE_URL: https://lovexiaoyue.cc.cd
           CLOUDFLARE_RUM_METRICS_JSON: ${{ secrets.CLOUDFLARE_RUM_METRICS_JSON }}
+          CLOUDFLARE_RUM_MAX_AGE_DAYS: 8
         run: pnpm run health:weekly artifacts/weekly-health/health-check.md
       - name: Publish report to job summary
         if: always()

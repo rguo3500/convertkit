@@ -33,7 +33,12 @@ export function BulkPage() {
   const [fileSize, setFileSize] = useState(0);
   const [fileError, setFileError] = useState("");
   const [locatedRow, setLocatedRow] = useState<number | null>(null);
-  const [invalidColumn, setInvalidColumn] = useState("all");
+  const [invalidColumn, setInvalidColumn] = useState(() => {
+    if (typeof window === "undefined") return "all";
+    return (
+      new URLSearchParams(window.location.search).get("issuesColumn") || "all"
+    );
+  });
   const [invalidSort, setInvalidSort] = useState<InvalidSort>("row-asc");
   const csvInputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -109,6 +114,21 @@ export function BulkPage() {
     () => Array.from(new Set(invalidValues.map(item => item.column))),
     [invalidValues]
   );
+  useEffect(() => {
+    if (invalidColumn !== "all" && !invalidColumns.includes(invalidColumn)) {
+      setInvalidColumn("all");
+    }
+  }, [invalidColumn, invalidColumns]);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (invalidColumn === "all") url.searchParams.delete("issuesColumn");
+    else url.searchParams.set("issuesColumn", invalidColumn);
+    window.history.replaceState(
+      null,
+      "",
+      `${url.pathname}${url.search}${url.hash}`
+    );
+  }, [invalidColumn]);
   const visibleInvalidValues = useMemo(() => {
     const filtered =
       invalidColumn === "all"
