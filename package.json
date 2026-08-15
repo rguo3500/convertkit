@@ -17,6 +17,7 @@
     "audit": "pnpm dlx @lhci/cli autorun",
     "audit:production": "PRODUCTION_SITE_URL=https://lovexiaoyue.cc.cd pnpm dlx @lhci/cli autorun --config=lighthouserc.production.cjs && node scripts/compare-production-lighthouse.mjs",
     "audit:robots": "PRODUCTION_SITE_URL=https://lovexiaoyue.cc.cd node scripts/check-production-robots.mjs",
+    "ops:check": "node scripts/check-ops-config.mjs",
     "audit:summary": "node scripts/summarize-lighthouse.mjs",
     "audit:regression": "node scripts/check-lighthouse-regression.mjs",
     "health:weekly": "node scripts/weekly-health-check.mjs",

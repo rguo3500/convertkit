@@ -373,3 +373,17 @@
 - [x] 处理 Cloudflare robots 差异并明确 Lighthouse 阻断策略
 - [x] 将 webhook 趋势报告接入团队周报输出
 - [x] 运行全量质量验证并保存 checkpoint
+
+
+## 本轮严格门禁收尾
+- [ ] 核对 GitHub Actions Secret/Variable 权限与当前状态
+- [ ] 完成签名密钥与强制校验配置，或记录外部权限阻塞
+- [ ] 审核 robots 结果并决定 Lighthouse 严格门禁状态
+- [ ] 复核 webhook 周报入口与审计产物
+- [ ] 运行全量质量验证并保存 checkpoint
+
+
+## GitHub 403 权限阻塞处理
+- [x] 记录当前 Secret/Variable 写入权限被 GitHub 403 拒绝
+- [x] 完善不依赖外部写权限的诊断与手动配置说明
+- [x] 执行本地质量验证并保存 checkpoint
