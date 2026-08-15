@@ -376,7 +376,8 @@ jobs:
                 return total + (String(file).endsWith('.csv') ? Math.max(0, content.split('\\n').length - 1) : (JSON.parse(content).rows || []).length);
               } catch { return total; }
             }, 0);
-            const routeExportSummary = routeExportFiles.length ? `${routeExportFiles.length} files · ${routeExportRows} route rows` : 'none generated in this run';
+            const routeExportLinks = routeExportFiles.map(file => `[${String(file).split('/').pop()}](${artifactUrl}#${encodeURIComponent(String(file).split('/').pop())})`).join(', ');
+            const routeExportSummary = routeExportFiles.length ? `${routeExportFiles.length} files · ${routeExportRows} route rows${routeExportLinks ? ` · ${routeExportLinks}` : ''}` : 'none generated in this run';
             const reportCounts = {
               axe: artifactFiles.filter(file => String(file).startsWith('axe/')).length,
               lighthouse: artifactFiles.filter(file => String(file).startsWith('lighthouse/')).length,

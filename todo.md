@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮 SHA 审计与移动方向测试完善
+- [x] 设计 commit SHA 安全命名规则
+- [x] 将短 SHA 写入 CSV/JSON 导出文件名和元数据
+- [x] 在 PR 评论中链接具体导出 artifact 文件
+- [x] 增加移动 Safari 屏幕方向切换回归测试
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮窗口导出与移动浏览器完善
 - [x] 设计日期窗口与 preset 的安全文件名
 - [x] 实现带窗口标识的 CSV/JSON 导出文件名
