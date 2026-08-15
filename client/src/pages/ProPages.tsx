@@ -20,6 +20,7 @@ const unitOptions = [
 ] as const;
 type ReadState = "idle" | "reading" | "ready" | "error";
 type ColumnMapping = { enabled: boolean; pair: number; outputName: string };
+type InvalidSort = "row-asc" | "row-desc" | "value-asc" | "value-desc";
 
 export function BulkPage() {
   const [csv, setCsv] = useState("value\n10\n25\n100");
@@ -32,6 +33,8 @@ export function BulkPage() {
   const [fileSize, setFileSize] = useState(0);
   const [fileError, setFileError] = useState("");
   const [locatedRow, setLocatedRow] = useState<number | null>(null);
+  const [invalidColumn, setInvalidColumn] = useState("all");
+  const [invalidSort, setInvalidSort] = useState<InvalidSort>("row-asc");
   const csvInputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     try {
@@ -102,6 +105,24 @@ export function BulkPage() {
       ),
     [activeMappings, parsed]
   );
+  const invalidColumns = useMemo(
+    () => Array.from(new Set(invalidValues.map(item => item.column))),
+    [invalidValues]
+  );
+  const visibleInvalidValues = useMemo(() => {
+    const filtered =
+      invalidColumn === "all"
+        ? [...invalidValues]
+        : invalidValues.filter(item => item.column === invalidColumn);
+    return filtered.sort((a, b) => {
+      if (invalidSort === "row-asc") return a.rowNumber - b.rowNumber;
+      if (invalidSort === "row-desc") return b.rowNumber - a.rowNumber;
+      const comparison = a.rawValue.localeCompare(b.rawValue, undefined, {
+        numeric: true,
+      });
+      return invalidSort === "value-asc" ? comparison : -comparison;
+    });
+  }, [invalidColumn, invalidSort, invalidValues]);
   const invalidReport = useMemo(
     () =>
       serializeCsv(
@@ -492,8 +513,46 @@ export function BulkPage() {
                   Select a row to locate its original value
                 </span>
               </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <label className="grid gap-1 text-[10px] font-semibold text-[#536276]">
+                  Filter by column
+                  <select
+                    aria-label="Filter invalid values by column"
+                    value={invalidColumn}
+                    onChange={event => setInvalidColumn(event.target.value)}
+                    className="border border-[#f0c6a8] bg-white px-2 py-2 text-xs font-normal outline-none focus:border-[#a34d19]"
+                  >
+                    <option value="all">All columns</option>
+                    {invalidColumns.map(column => (
+                      <option key={column} value={column}>
+                        {column}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="grid gap-1 text-[10px] font-semibold text-[#536276]">
+                  Sort issues
+                  <select
+                    aria-label="Sort invalid values"
+                    value={invalidSort}
+                    onChange={event =>
+                      setInvalidSort(event.target.value as InvalidSort)
+                    }
+                    className="border border-[#f0c6a8] bg-white px-2 py-2 text-xs font-normal outline-none focus:border-[#a34d19]"
+                  >
+                    <option value="row-asc">Row: ascending</option>
+                    <option value="row-desc">Row: descending</option>
+                    <option value="value-asc">Value: A–Z</option>
+                    <option value="value-desc">Value: Z–A</option>
+                  </select>
+                </label>
+              </div>
+              <p className="mt-2 text-[10px] text-[#647087]">
+                Showing {Math.min(visibleInvalidValues.length, 20)} of{" "}
+                {visibleInvalidValues.length} filtered issues.
+              </p>
               <div className="mt-2 grid gap-1">
-                {invalidValues.slice(0, 20).map(item => (
+                {visibleInvalidValues.slice(0, 20).map(item => (
                   <button
                     key={`${item.rowNumber}-${item.column}`}
                     type="button"
@@ -510,10 +569,10 @@ export function BulkPage() {
                   </button>
                 ))}
               </div>
-              {invalidValues.length > 20 && (
+              {visibleInvalidValues.length > 20 && (
                 <p className="mt-2 text-[10px] text-[#647087]">
-                  Showing the first 20 of {invalidValues.length} invalid values;
-                  download the report for the full list.
+                  Showing the first 20 of {visibleInvalidValues.length} filtered
+                  issues; download the report for the full list.
                 </p>
               )}
               {locatedRow !== null && (

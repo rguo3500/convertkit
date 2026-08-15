@@ -54,6 +54,8 @@ jobs:
         if: steps.health.outcome == 'failure'
         continue-on-error: true
         uses: actions/github-script@v7
+        env:
+          HEALTH_ALERT_ASSIGNEE: ${{ vars.HEALTH_ALERT_ASSIGNEE }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -61,13 +63,33 @@ jobs:
             const marker = '<!-- convertkit-weekly-health-alert -->';
             const reportPath = 'artifacts/weekly-health/health-check.md';
             const report = fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'Health report was not generated.';
+            const labels = ['health-check', 'automated'];
+            const assignees = process.env.HEALTH_ALERT_ASSIGNEE ? [process.env.HEALTH_ALERT_ASSIGNEE] : [];
+            for (const name of labels) {
+              try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name }); }
+              catch { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: name === 'health-check' ? 'B60205' : '1D56C9' }); }
+            }
             const body = `${marker}\n## ConvertKit weekly health check needs review\n\nThe scheduled production check reported a failure. Review the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) and the uploaded report artifact.\n\n${report.slice(-6000)}\n\nThis issue is updated by subsequent failed checks.`;
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find(issue => !issue.pull_request && issue.body?.includes(marker));
             if (existing) {
-              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body, labels, assignees });
             } else {
-              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: '[ConvertKit] Weekly health check needs review', body });
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: '[ConvertKit] Weekly health check needs review', body, labels, assignees });
+            }
+      - name: Close resolved health alert
+        if: steps.health.outcome == 'success'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- convertkit-weekly-health-alert -->';
+            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            const existing = issues.find(issue => !issue.pull_request && issue.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body: `Resolved by successful weekly health check in [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).` });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, state: 'closed' });
             }
       - name: Fail when health check needs review
         if: steps.health.outcome == 'failure'

@@ -91,6 +91,29 @@ describe("format tool interactions", () => {
     expect(screen.getByText("1 invalid values will remain blank")).toBeTruthy();
   });
 
+  it("filters and sorts invalid value locations", async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const csvInput = screen.getByRole("textbox", { name: "CSV text" });
+    await user.clear(csvInput);
+    fireEvent.change(csvInput, {
+      target: { value: "meters,kilograms\nbad,zoo\n2,wrong" },
+    });
+    await user.click(screen.getByRole("checkbox", { name: "kilograms" }));
+    const columnFilter = screen.getByRole("combobox", {
+      name: "Filter invalid values by column",
+    });
+    await user.selectOptions(columnFilter, "kilograms");
+    expect(screen.getByText("Showing 2 of 2 filtered issues.")).toBeTruthy();
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Sort invalid values" }),
+      "row-desc"
+    );
+    expect(
+      screen.getByRole("button", { name: "Locate row 3, column kilograms" })
+    ).toBeTruthy();
+  });
+
   it("downloads an invalid value report with row and column details", async () => {
     const user = userEvent.setup();
     const clickSpy = vi

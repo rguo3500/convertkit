@@ -52,7 +52,7 @@ Cloudflare Pages 支持在 Cloudflare Dashboard 的 **Workers & Pages → 对应
 
 `.github/workflows/weekly-health.yml` 每周一 02:17 UTC 自动运行，也支持在 GitHub Actions 中使用 **Run workflow** 手动触发。它会检查生产首页、`robots.txt`、`sitemap.xml`、批量转换页和 JSON 工具页，验证 HTTP 状态以及 Robots/Sitemap 是否仍指向 `lovexiaoyue.cc.cd`。每次运行都会生成 Job Summary，并将 Markdown 报告保存为 90 天 artifact。
 
-如果检查失败，工作流会自动创建或更新唯一的开放 Issue：`[ConvertKit] Weekly health check needs review`。该 Issue 使用固定标记避免重复创建；维护者应查看 workflow run、下载报告、记录行动项，修复后等待下一次成功运行并关闭 Issue。工作流通过仓库的 `GITHUB_TOKEN` 写入 Issue，不需要额外的第三方 webhook 密钥。
+如果检查失败，工作流会自动创建或更新唯一的开放 Issue：`[ConvertKit] Weekly health check needs review`，并添加 `health-check` 与 `automated` 标签。若在仓库 Variables 中设置 `HEALTH_ALERT_ASSIGNEE`，工作流还会自动指定一名负责人；未设置时不会强行分配账号。该 Issue 使用固定标记避免重复创建；下一次成功检查会追加 resolved 评论并自动关闭 Issue。工作流通过仓库的 `GITHUB_TOKEN` 写入 Issue，不需要额外的第三方 webhook 密钥。
 
 ## Production checks
 
