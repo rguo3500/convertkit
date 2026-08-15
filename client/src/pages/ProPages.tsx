@@ -355,11 +355,20 @@ export function BulkPage() {
       );
     };
     reader.onload = () => {
-      setCsv(String(reader.result ?? ""));
-      setReadProgress(100);
-      setReadState("ready");
+      try {
+        const decoder = new TextDecoder("utf-8", { fatal: true });
+        setCsv(decoder.decode(reader.result as ArrayBuffer));
+        setReadProgress(100);
+        setReadState("ready");
+      } catch {
+        setReadProgress(0);
+        setReadState("error");
+        setFileError(
+          "This file is not valid UTF-8 CSV. Export it as UTF-8 and upload again."
+        );
+      }
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   };
   const handleCsvChange = (value: string) => {
     setCsv(value);

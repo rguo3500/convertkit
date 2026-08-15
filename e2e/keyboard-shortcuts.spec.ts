@@ -84,3 +84,28 @@ test("mobile Safari keeps loading and scroll position under constrained bandwidt
   const after = await page.evaluate(() => window.scrollY);
   expect(after).toBeGreaterThanOrEqual(Math.max(0, before - 8));
 });
+
+test("mobile Safari reports invalid UTF-8 files without corrupting local state", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-safari", "Mobile Safari-only regression");
+  await page.goto("/bulk-converter");
+  const fileInput = page.locator('input[type="file"][aria-label="Input CSV"]');
+  await fileInput.setInputFiles({
+    name: "invalid-encoding.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from([0xff, 0xfe, 0x00, 0x61]),
+  });
+  await expect(page.getByRole("alert")).toContainText(/not valid UTF-8 CSV/i);
+  await expect(page.getByRole("button", { name: /Download CSV/i })).toBeDisabled();
+});
+
+test("mobile Safari recovers local editing after offline and online transitions", async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-safari", "Mobile Safari-only regression");
+  await page.goto("/bulk-converter");
+  const csvInput = page.locator('textarea[aria-label="CSV text"]');
+  await context.setOffline(true);
+  await csvInput.fill("value\\noffline\\n");
+  await expect(csvInput).toHaveValue("value\\noffline\\n");
+  await context.setOffline(false);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: /Convert whole columns/i })).toBeVisible();
+});

@@ -342,7 +342,10 @@ jobs:
             return { file: String(file), bytes: content.length, rows, sha256: crypto.createHash('sha256').update(content).digest('hex'), ...metadata };
           });
           const source = entries.find(entry => entry.commitSha || entry.runTimestamp) || {};
-          fs.writeFileSync('artifacts/summary/rum-route-export-index.json', JSON.stringify({ schemaVersion: 1, generatedAt: new Date().toISOString(), runTimestamp: source.runTimestamp || null, commitSha: source.commitSha || null, preset: source.preset || null, windowStart: source.windowStart || null, windowEnd: source.windowEnd || null, files: entries }, null, 2) + '\\n');
+          const indexBase = { schemaVersion: 1, integrityVersion: 1, generatedAt: new Date().toISOString(), runTimestamp: source.runTimestamp || null, commitSha: source.commitSha || null, preset: source.preset || null, windowStart: source.windowStart || null, windowEnd: source.windowEnd || null, files: entries };
+          const canonical = JSON.stringify(indexBase);
+          const manifestSha256 = crypto.createHash('sha256').update(canonical).digest('hex');
+          fs.writeFileSync('artifacts/summary/rum-route-export-index.json', JSON.stringify({ ...indexBase, manifestSha256 }, null, 2) + '\\n');
           NODE
 
       - name: Validate webhook audit schema
@@ -402,6 +405,9 @@ jobs:
             }).join(', ');
             const routeExportSummary = routeExportFiles.length ? `${routeExportFiles.length} files · ${routeExportRows} route rows${routeExportLinks ? ` · ${routeExportLinks}` : ''}` : 'none generated in this run';
             const routeExportIndexLink = `[RUM export index](${artifactUrl}#rum-route-export-index.json)`;
+            const routeExportIndexPath = 'artifacts/summary/rum-route-export-index.json';
+            const routeExportIndex = fs.existsSync(routeExportIndexPath) ? JSON.parse(fs.readFileSync(routeExportIndexPath, 'utf8')) : null;
+            const routeExportIntegrity = routeExportIndex?.manifestSha256 ? `integrity v${routeExportIndex.integrityVersion}: ${routeExportIndex.manifestSha256}` : 'integrity unavailable';
             const reportCounts = {
               axe: artifactFiles.filter(file => String(file).startsWith('axe/')).length,
               lighthouse: artifactFiles.filter(file => String(file).startsWith('lighthouse/')).length,
@@ -424,7 +430,7 @@ jobs:
               }
             }
             const stepFailureSummary = Object.entries(failuresByStep).map(([step, details]) => `${step}: ${Object.entries(details.categories).map(([category, count]) => `${category} x${count}`).join(', ')}; last ${details.lastSeen || 'unknown'}`).join(' · ') || 'none recorded';
-            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
+            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- RUM route exports: ${routeExportSummary} — ${routeExportIndexLink} — ${routeExportIntegrity} — [download artifacts](${artifactUrl})\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
