@@ -53,6 +53,8 @@ jobs:
           end=$(date +%s)
           echo "build_duration=$((end-start))s" >> /tmp/convertkit-timing.log
           exit "$status"
+      - name: Install Chromium for accessibility audit
+        run: pnpm exec playwright install --with-deps chromium
       - name: Start preview server for accessibility audit
         run: |
           pnpm run dev -- --host 127.0.0.1 > /tmp/convertkit-vite.log 2>&1 &
