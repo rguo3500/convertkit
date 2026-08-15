@@ -42,6 +42,15 @@ describe('format tool interactions', () => {
     expect(screen.getByRole('status').textContent).toMatch(/1970/);
   });
 
+  it('rejects CSV files larger than the local processing limit', async () => {
+    const user = userEvent.setup();
+    render(<BulkPage />);
+    const oversized = new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'large.csv', { type: 'text/csv' });
+    await user.upload(screen.getByLabelText('Input CSV'), oversized);
+    expect(screen.getByRole('alert').textContent).toContain('larger than 5 MB');
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toHaveProperty('disabled', true);
+  });
+
   it('imports a CSV file and exposes the converted download action', async () => {
     const user = userEvent.setup();
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});

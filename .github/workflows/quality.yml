@@ -39,7 +39,36 @@ jobs:
         run: pnpm run audit:a11y
       - name: Lighthouse CI
         run: pnpm run audit
-      - name: Upload accessibility and Lighthouse reports
+      - name: Capture failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p artifacts/failures
+          {
+            echo "run_id=${{ github.run_id }}"
+            echo "sha=${{ github.sha }}"
+            echo "ref=${{ github.ref }}"
+            date -u
+          } > artifacts/failures/run-info.txt
+          if [ -f /tmp/convertkit-vite.log ]; then
+            cp /tmp/convertkit-vite.log artifacts/failures/vite.log
+          fi
+          for route in / /format-converters /batch-converter; do
+            name=$(echo "$route" | tr '/-' '__')
+            curl -L --max-time 20 -sS -D "artifacts/failures/${name}.headers" \
+              -o "artifacts/failures/${name}.html" "http://127.0.0.1:3000$route" || true
+          done
+          browser=""
+          for candidate in chromium chromium-browser google-chrome; do
+            if command -v "$candidate" >/dev/null 2>&1; then browser="$candidate"; break; fi
+          done
+          if [ -n "$browser" ]; then
+            "$browser" --headless --no-sandbox --disable-gpu --hide-scrollbars \
+              --window-size=1440,1200 --screenshot=artifacts/failures/home.png \
+              http://127.0.0.1:3000/ || true
+          fi
+
+      - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -47,5 +76,6 @@ jobs:
           path: |
             artifacts/axe/ci/
             artifacts/lighthouse/
+            artifacts/failures/
           if-no-files-found: warn
           retention-days: 14

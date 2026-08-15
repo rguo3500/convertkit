@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 最新质量与发布完善
+- [x] 确认 Cloudflare 线上资源对应最新提交 3a2e79e
+- [x] 为 CI artifact 增加失败时的 HTML、JSON 和截图报告
+- [x] 为批量 CSV 文件增加大小上限提示
+- [x] 为批量读取、解析和下载增加进度反馈
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮质量与发布完善
 - [x] 确认 Cloudflare 线上资源对应最新提交 21a0ceb
 - [x] 补充 JSON、XML、Base64、URL、时间戳的错误输入测试
