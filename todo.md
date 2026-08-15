@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮产品与运营完善
+- [x] 规划批量 CSV 多列映射数据模型
+- [x] 实现多列映射与自定义输出列配置
+- [x] 为 CI 失败报告增加 Pull Request 摘要评论
+- [x] 补充 Cloudflare Web Analytics 与 Search Console 接入说明
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 最新质量与发布完善
 - [x] 确认 Cloudflare 线上资源对应最新提交 3a2e79e
 - [x] 为 CI artifact 增加失败时的 HTML、JSON 和截图报告
