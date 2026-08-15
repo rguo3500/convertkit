@@ -415,3 +415,10 @@
 - [x] 核验 Cloudflare Managed robots 外部审核条件
 - [x] 按条件启用或保持 Lighthouse 严格阻断
 - [x] 执行完整验证并保存 checkpoint
+
+
+## 本轮管理员权限与规则复核
+- [x] 核验 GitHub 管理权限与签名状态
+- [x] 复核 Cloudflare robots 规则与外部审核
+- [x] 按条件配置 Lighthouse 严格门禁
+- [x] 执行质量验证并保存 checkpoint
