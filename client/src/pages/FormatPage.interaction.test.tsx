@@ -125,6 +125,7 @@ describe("format tool interactions", () => {
       screen.getByRole("combobox", { name: "Sort invalid values" }),
       "row-desc"
     );
+    expect(window.location.search).toContain("issuesSort=row-desc");
     expect(
       screen.getByRole("button", { name: "Locate row 3, column kilograms" })
     ).toBeTruthy();

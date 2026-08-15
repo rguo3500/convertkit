@@ -134,6 +134,13 @@ const lines = [
   "## Cloudflare Web Analytics RUM",
   "",
   rumMetrics
+    ? "| Status | Source | Reporting window (UTC) | Collected at (UTC) | Age |"
+    : "| Status | Source | Reporting window (UTC) | Collected at (UTC) | Age |",
+  "| --- | --- | --- | --- | ---: |",
+  rumMetrics
+    ? `| **${rumFreshness}** | Cloudflare Web Analytics | ${rumMetrics.windowStart || "n/a"} → ${rumMetrics.windowEnd || "n/a"} | ${rumMetrics.collectedAt || "n/a"} | ${rumMetrics.ageDays ?? "n/a"} days |`
+    : "| **NOT_CONFIGURED** | Cloudflare Web Analytics | n/a | n/a | n/a |",
+  rumMetrics
     ? `- Source: **Cloudflare Web Analytics** (provided by the configured RUM exporter)`
     : "- Status: **Not configured** — set `CLOUDFLARE_RUM_METRICS_JSON` in the scheduled workflow to include verified RUM data.",
   ...(rumMetrics

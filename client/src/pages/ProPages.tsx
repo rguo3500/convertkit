@@ -39,7 +39,15 @@ export function BulkPage() {
       new URLSearchParams(window.location.search).get("issuesColumn") || "all"
     );
   });
-  const [invalidSort, setInvalidSort] = useState<InvalidSort>("row-asc");
+  const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
+    if (typeof window === "undefined") return "row-asc";
+    const value = new URLSearchParams(window.location.search).get("issuesSort");
+    return value === "row-desc" ||
+      value === "value-asc" ||
+      value === "value-desc"
+      ? value
+      : "row-asc";
+  });
   const csvInputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     try {
@@ -123,12 +131,14 @@ export function BulkPage() {
     const url = new URL(window.location.href);
     if (invalidColumn === "all") url.searchParams.delete("issuesColumn");
     else url.searchParams.set("issuesColumn", invalidColumn);
+    if (invalidSort === "row-asc") url.searchParams.delete("issuesSort");
+    else url.searchParams.set("issuesSort", invalidSort);
     window.history.replaceState(
       null,
       "",
       `${url.pathname}${url.search}${url.hash}`
     );
-  }, [invalidColumn]);
+  }, [invalidColumn, invalidSort]);
   const visibleInvalidValues = useMemo(() => {
     const filtered =
       invalidColumn === "all"
