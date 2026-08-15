@@ -14,10 +14,10 @@ const PricingPage = lazy(() => import('./pages/ProPages').then(module => ({ defa
 import { conversionSlugs } from './data/conversionRegistry';
 
 const navItems = [
-  ['/converters', 'Unit converters'],
-  ['/format-converters', 'Format tools'],
-  ['/blog', 'Guides'],
-  ['/pricing', 'Pricing'],
+  ['/converters', 'Unit converters', '单位转换'],
+  ['/format-converters', 'Format tools', '格式工具'],
+  ['/blog', 'Guides', '指南'],
+  ['/pricing', 'Pricing', '价格'],
 ];
 
 function Header() {
@@ -29,16 +29,16 @@ function Header() {
         <img src="/manus-storage/convertkit-mark_d7d5ec7b.png" alt="ConvertKit mark" className="h-9 w-9 object-contain shadow-[4px_4px_0_#0c1220]" />
         <span><span className="font-display text-[19px] font-bold tracking-[-.04em]">ConvertKit</span><span className="ml-2 hidden font-mono text-[9px] uppercase tracking-[.18em] text-[#8e9bb2] sm:inline">Tools / 01</span></span>
       </Link>
-      <nav className="hidden items-center gap-7 text-[13px] font-medium text-[#b9c3d5] md:flex">
-        {navItems.map(([href, label]) => <Link key={href} href={href} className="transition-colors hover:text-white">{label}</Link>)}
+      <nav aria-label="Primary navigation / 主导航" className="hidden items-center gap-7 text-[13px] font-medium text-[#b9c3d5] md:flex">
+        {navItems.map(([href, label, localized]) => <Link key={href} href={href} aria-label={`${label} / ${localized}`} className="transition-colors hover:text-white">{label}</Link>)}
       </nav>
       <div className="flex items-center gap-2">
-        <button aria-label="Toggle theme" onClick={() => setDark(!dark)} className="hidden h-9 w-9 place-items-center border border-[#334158] text-[#b9c3d5] transition hover:border-[#678cf1] hover:text-white sm:grid">{dark ? <Sun size={16}/> : <Moon size={16}/>}</button>
+        <button aria-label="Toggle theme / 切换主题" onClick={() => setDark(!dark)} className="hidden h-9 w-9 place-items-center border border-[#334158] text-[#b9c3d5] transition hover:border-[#678cf1] hover:text-white sm:grid">{dark ? <Sun size={16}/> : <Moon size={16}/>}</button>
         <Link href="/converters" className="hidden items-center gap-2 bg-[#356ae6] px-4 py-2.5 text-[12px] font-semibold text-white transition hover:bg-[#4779ed] sm:flex">Open converter <ArrowRight size={14}/></Link>
-        <button aria-label="Open navigation" onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center border border-[#334158] md:hidden">{open ? <X size={17}/> : <Menu size={17}/>}</button>
+        <button aria-label="Open navigation / 打开导航菜单" onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center border border-[#334158] md:hidden">{open ? <X size={17}/> : <Menu size={17}/>}</button>
       </div>
     </div>
-    {open && <div className="border-t border-[#283449] bg-[#111827] px-6 py-5 md:hidden"><nav className="grid gap-4 text-sm text-[#c8d1df]">{navItems.map(([href,label]) => <Link key={href} href={href} onClick={() => setOpen(false)}>{label}</Link>)}</nav></div>}
+    {open && <div className="border-t border-[#283449] bg-[#111827] px-6 py-5 md:hidden"><nav aria-label="Mobile navigation / 移动导航" className="grid gap-4 text-sm text-[#c8d1df]">{navItems.map(([href,label,localized]) => <Link key={href} href={href} aria-label={`${label} / ${localized}`} onClick={() => setOpen(false)}>{label}</Link>)}</nav></div>}
   </header>;
 }
 

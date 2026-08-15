@@ -346,6 +346,7 @@ const lines = [
   "## RUM trend history",
   "",
         "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
+  `Preset selected: **${rumHistoryPreset || "all"}**.`,
   historyFilterSummary,
   "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are GREEN; higher values are AMBER. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
