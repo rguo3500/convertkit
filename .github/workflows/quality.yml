@@ -358,10 +358,16 @@ jobs:
             for (const line of summary.split('\\n')) {
               const heading = line.match(/^#{1,3}\\s+(.+)/);
               if (heading) currentStep = heading[1].trim();
-              const categories = [...new Set(line.match(/HTTP_4XX|HTTP_5XX|NETWORK_OR_TIMEOUT/g) || [])];
-              if (categories.length) failuresByStep[currentStep] = [...new Set([...(failuresByStep[currentStep] || []), ...categories])];
+              const categories = line.match(/HTTP_4XX|HTTP_5XX|NETWORK_OR_TIMEOUT/g) || [];
+              if (categories.length) {
+                const timestamp = line.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z/)?.[0] || null;
+                const bucket = failuresByStep[currentStep] || { categories: {}, lastSeen: null };
+                for (const category of categories) bucket.categories[category] = (bucket.categories[category] || 0) + 1;
+                if (timestamp && (!bucket.lastSeen || timestamp > bucket.lastSeen)) bucket.lastSeen = timestamp;
+                failuresByStep[currentStep] = bucket;
+              }
             }
-            const stepFailureSummary = Object.entries(failuresByStep).map(([step, categories]) => `${step}: ${categories.join(', ')}`).join(' · ') || 'none recorded';
+            const stepFailureSummary = Object.entries(failuresByStep).map(([step, details]) => `${step}: ${Object.entries(details.categories).map(([category, count]) => `${category} x${count}`).join(', ')}; last ${details.lastSeen || 'unknown'}`).join(' · ') || 'none recorded';
             const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
