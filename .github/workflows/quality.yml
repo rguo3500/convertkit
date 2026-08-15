@@ -62,6 +62,9 @@ jobs:
       - name: Summarize Lighthouse scores
         if: always()
         run: pnpm run audit:summary
+      - name: Check Lighthouse regression thresholds
+        if: always()
+        run: pnpm run audit:regression
       - name: Capture failure diagnostics
         if: failure()
         shell: bash
@@ -103,6 +106,10 @@ jobs:
             if [ -f artifacts/summary/lighthouse-summary.md ]; then
               echo ""
               cat artifacts/summary/lighthouse-summary.md
+            fi
+            if [ -f artifacts/summary/lighthouse-regression.txt ]; then
+              echo ""
+              cat artifacts/summary/lighthouse-regression.txt
             fi
           } > artifacts/summary/quality-summary.txt
 

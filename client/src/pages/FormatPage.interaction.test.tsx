@@ -111,6 +111,13 @@ describe("format tool interactions", () => {
     await user.click(reportButton);
     expect(clickSpy).toHaveBeenCalled();
     expect(URL.createObjectURL).toHaveBeenCalled();
+    await user.click(
+      screen.getByRole("button", { name: "Download JSON report" })
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Locate row 2, column value" })
+    );
+    expect(screen.getByText("Located row 2 in the input.")).toBeTruthy();
   });
 
   it("imports a CSV file and exposes the converted download action", async () => {

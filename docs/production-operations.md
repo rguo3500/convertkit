@@ -48,6 +48,12 @@ Cloudflare Pages 支持在 Cloudflare Dashboard 的 **Workers & Pages → 对应
 
 建议每周观察访问量、主要入口页面、错误率、Largest Contentful Paint、Interaction to Next Paint 和 Cumulative Layout Shift。生产数据与本地 Lighthouse 基线应分开解读，避免把网络、设备或缓存差异误判为代码回归。分析启用后，应在站点隐私说明中明确记录使用的分析服务、采集目的和用户可用的隐私控制。
 
+## Weekly automated health check
+
+`.github/workflows/weekly-health.yml` 每周一 02:17 UTC 自动运行，也支持在 GitHub Actions 中使用 **Run workflow** 手动触发。它会检查生产首页、`robots.txt`、`sitemap.xml`、批量转换页和 JSON 工具页，验证 HTTP 状态以及 Robots/Sitemap 是否仍指向 `lovexiaoyue.cc.cd`。每次运行都会生成 Job Summary，并将 Markdown 报告保存为 90 天 artifact。
+
+如果检查失败，工作流会自动创建或更新唯一的开放 Issue：`[ConvertKit] Weekly health check needs review`。该 Issue 使用固定标记避免重复创建；维护者应查看 workflow run、下载报告、记录行动项，修复后等待下一次成功运行并关闭 Issue。工作流通过仓库的 `GITHUB_TOKEN` 写入 Issue，不需要额外的第三方 webhook 密钥。
+
 ## Production checks
 
 ```bash

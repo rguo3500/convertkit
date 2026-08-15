@@ -1,5 +1,5 @@
 /* Signal Workshop: Swiss workbench layout, crisp borders, cobalt action color, and explicit local-first status. Keep file workflows direct, measurable, and keyboard accessible. */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowRight,
@@ -31,6 +31,8 @@ export function BulkPage() {
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);
   const [fileError, setFileError] = useState("");
+  const [locatedRow, setLocatedRow] = useState<number | null>(null);
+  const csvInputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     try {
       setHistory(
@@ -114,6 +116,10 @@ export function BulkPage() {
       ),
     [invalidValues]
   );
+  const invalidReportJson = useMemo(
+    () => JSON.stringify(invalidValues, null, 2),
+    [invalidValues]
+  );
   const result = useMemo(() => {
     if (!parsed.headers.length) return "";
     const outputHeaders = [
@@ -189,6 +195,25 @@ export function BulkPage() {
     setFileSize(0);
     setFileError("");
   };
+  const locateInvalidValue = (item: (typeof invalidValues)[number]) => {
+    const lines = csv.split(/\r?\n/);
+    const lineStart = lines
+      .slice(0, item.rowNumber - 1)
+      .reduce((total, line) => total + line.length + 1, 0);
+    const valueOffset = lines[item.rowNumber - 1]?.indexOf(item.rawValue) ?? 0;
+    const start = Math.max(0, lineStart + valueOffset);
+    csvInputRef.current?.focus();
+    csvInputRef.current?.setSelectionRange(start, start + item.rawValue.length);
+    setLocatedRow(item.rowNumber);
+  };
+  const downloadBlob = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
   const downloadInvalidReport = () => {
     if (
       !invalidValues.length ||
@@ -196,12 +221,7 @@ export function BulkPage() {
       readState === "error"
     )
       return;
-    const blob = new Blob([invalidReport], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "convertkit-invalid-values.csv";
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadBlob(invalidReport, "convertkit-invalid-values.csv");
   };
   const download = () => {
     if (!result || readState === "reading" || readState === "error") return;
@@ -317,6 +337,7 @@ export function BulkPage() {
               )}
               <textarea
                 aria-label="CSV text"
+                ref={csvInputRef}
                 value={csv}
                 onChange={e => handleCsvChange(e.target.value)}
                 className="min-h-[240px] border border-[#dbe1eb] bg-[#fbfcfe] p-4 font-mono text-sm leading-6 outline-none focus:border-[#1d56c9]"
@@ -429,17 +450,82 @@ export function BulkPage() {
                 : "All mapped values are numeric"}
             </span>
           </div>
-          <button
-            onClick={downloadInvalidReport}
-            disabled={
-              !invalidValues.length ||
-              readState === "reading" ||
-              readState === "error"
-            }
-            className="mt-3 flex items-center gap-2 border border-[#a34d19] px-5 py-3 text-sm font-semibold text-[#a34d19] hover:bg-[#fff7ed] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <FileWarning size={15} /> Download invalid value report
-          </button>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              onClick={downloadInvalidReport}
+              disabled={
+                !invalidValues.length ||
+                readState === "reading" ||
+                readState === "error"
+              }
+              className="flex items-center gap-2 border border-[#a34d19] px-5 py-3 text-sm font-semibold text-[#a34d19] hover:bg-[#fff7ed] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FileWarning size={15} /> Download invalid value report
+            </button>
+            <button
+              onClick={() =>
+                downloadBlob(
+                  invalidReportJson,
+                  "convertkit-invalid-values.json"
+                )
+              }
+              disabled={
+                !invalidValues.length ||
+                readState === "reading" ||
+                readState === "error"
+              }
+              className="flex items-center gap-2 border border-[#dbe1eb] px-5 py-3 text-sm font-semibold text-[#172033] hover:border-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Download JSON report
+            </button>
+          </div>
+          {invalidValues.length > 0 && (
+            <div
+              className="mt-4 border border-[#f0c6a8] bg-[#fffaf5] p-3"
+              aria-label="Invalid value locations"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-mono text-[10px] uppercase tracking-[.14em] text-[#a34d19]">
+                  Invalid value locations
+                </p>
+                <span className="text-[10px] font-normal text-[#647087]">
+                  Select a row to locate its original value
+                </span>
+              </div>
+              <div className="mt-2 grid gap-1">
+                {invalidValues.slice(0, 20).map(item => (
+                  <button
+                    key={`${item.rowNumber}-${item.column}`}
+                    type="button"
+                    onClick={() => locateInvalidValue(item)}
+                    className="flex items-center justify-between gap-3 border-b border-[#f0c6a8] py-2 text-left text-xs text-[#536276] hover:text-[#a34d19]"
+                    aria-label={`Locate row ${item.rowNumber}, column ${item.column}`}
+                  >
+                    <span>
+                      Row {item.rowNumber} · {item.column}
+                    </span>
+                    <span className="max-w-[12rem] truncate font-mono text-[10px]">
+                      {item.rawValue}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {invalidValues.length > 20 && (
+                <p className="mt-2 text-[10px] text-[#647087]">
+                  Showing the first 20 of {invalidValues.length} invalid values;
+                  download the report for the full list.
+                </p>
+              )}
+              {locatedRow !== null && (
+                <p
+                  className="mt-2 text-[10px] font-semibold text-[#a34d19]"
+                  role="status"
+                >
+                  Located row {locatedRow} in the input.
+                </p>
+              )}
+            </div>
+          )}
           <button
             onClick={download}
             disabled={

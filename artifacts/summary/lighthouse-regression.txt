@@ -1,0 +1,2 @@
+Lighthouse regression check: PASS
+Allowed score drops are measured in absolute percentage points.
