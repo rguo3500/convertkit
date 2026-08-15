@@ -42,6 +42,7 @@ export function BulkPage() {
   const [shareCopyState, setShareCopyState] = useState<
     "idle" | "copied" | "error"
   >("idle");
+  const [shareLinkPreview, setShareLinkPreview] = useState("");
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -144,7 +145,9 @@ export function BulkPage() {
   }, [invalidColumn, invalidSort]);
   const copyShareLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const shareUrl = window.location.href;
+      await navigator.clipboard.writeText(shareUrl);
+      setShareLinkPreview(shareUrl);
       setShareCopyState("copied");
     } catch {
       setShareCopyState("error");
@@ -625,6 +628,14 @@ export function BulkPage() {
                       ? "Copy unavailable"
                       : ""}
                 </span>
+                {shareCopyState === "copied" && shareLinkPreview && (
+                  <code
+                    className="block max-w-full truncate text-[10px] text-[#1d56c9]"
+                    title={shareLinkPreview}
+                  >
+                    {shareLinkPreview}
+                  </code>
+                )}
               </div>
               <p className="mt-2 text-[10px] text-[#647087]">
                 Showing {Math.min(visibleInvalidValues.length, 20)} of{" "}

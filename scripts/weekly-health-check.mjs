@@ -1,9 +1,12 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const site = process.env.SITE_URL || "https://lovexiaoyue.cc.cd";
 const output = resolve(
   process.argv[2] || "artifacts/weekly-health/health-check.md"
+);
+const historyPath = resolve(
+  process.env.CLOUDFLARE_RUM_HISTORY_PATH || "docs/rum-history.json"
 );
 const routes = [
   "/",
@@ -99,6 +102,28 @@ async function check(path) {
   }
 }
 
+if (rumMetrics && rumFreshness === "FRESH") {
+  try {
+    const existingHistory = JSON.parse(await readFile(historyPath, "utf8"));
+    const history = Array.isArray(existingHistory) ? existingHistory : [];
+    history.push({
+      collectedAt: rumMetrics.collectedAt,
+      windowStart: rumMetrics.windowStart,
+      windowEnd: rumMetrics.windowEnd,
+      visits: rumMetrics.visits,
+      lcpP75Ms: rumMetrics.lcpP75Ms,
+      inpP75Ms: rumMetrics.inpP75Ms,
+      clsP75: rumMetrics.clsP75,
+      status: rumFreshness,
+    });
+    await writeFile(
+      historyPath,
+      `${JSON.stringify(history.slice(-12), null, 2)}\n`
+    );
+  } catch {
+    // A missing or read-only history file must not invalidate endpoint checks.
+  }
+}
 const checks = await Promise.all(routes.map(check));
 const sitemap = checks.find(item => item.path === "/sitemap.xml");
 const robots = checks.find(item => item.path === "/robots.txt");
@@ -165,6 +190,10 @@ const lines = [
         `- CLS P75: **${rumMetrics.clsP75 ?? "n/a"}**`,
       ]
     : []),
+  "",
+  "## RUM trend history",
+  "",
+  "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
   "",
   "## Manual review fields",
   "",

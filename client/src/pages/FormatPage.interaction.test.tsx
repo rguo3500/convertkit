@@ -136,6 +136,7 @@ describe("format tool interactions", () => {
       expect.stringContaining("issuesSort=row-desc")
     );
     expect(screen.getByText("Link copied")).toBeTruthy();
+    expect(screen.getByText(/issuesSort=row-desc/)).toBeTruthy();
     expect(
       screen.getByRole("button", { name: "Locate row 3, column kilograms" })
     ).toBeTruthy();

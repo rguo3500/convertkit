@@ -72,6 +72,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           LIGHTHOUSE_ISSUE_ASSIGNEE: ${{ vars.LIGHTHOUSE_ISSUE_ASSIGNEE }}
+          TEAM_ALERT_WEBHOOK_URL: ${{ secrets.TEAM_ALERT_WEBHOOK_URL }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -108,7 +109,15 @@ jobs:
                 issueNumber = created.data.number;
               }
               if (ownerChanged && issueNumber) {
-                await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber, body: `Owner changed: ${previousOwner ? `@${previousOwner}` : 'unassigned'} → @${assignee} at ${new Date().toISOString()}.` });
+                const changeMessage = `Lighthouse exception owner changed: ${previousOwner ? `@${previousOwner}` : 'unassigned'} → @${assignee} at ${new Date().toISOString()}.`;
+                await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber, body: changeMessage });
+                if (process.env.TEAM_ALERT_WEBHOOK_URL) {
+                  await fetch(process.env.TEAM_ALERT_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ text: changeMessage, content: changeMessage }),
+                  });
+                }
               }
             } else if (existing) {
               await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body: `No Lighthouse exception expires within 30 days in [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).` });
