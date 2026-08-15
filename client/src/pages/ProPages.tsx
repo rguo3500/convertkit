@@ -446,6 +446,20 @@ export function BulkPage() {
                         {stats.valid} valid · {stats.invalid} invalid
                         {stats.empty ? ` · ${stats.empty} empty` : ""}
                       </span>
+                      <button
+                        type="button"
+                        disabled={
+                          stats.invalid === 0 ||
+                          !activeMappings.some(
+                            mapping => mapping.index === index
+                          )
+                        }
+                        onClick={() => setInvalidColumn(header)}
+                        className="mt-2 border border-[#dbe1eb] px-2 py-1 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9] disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label={`Show issues for ${header || `column ${index + 1}`}`}
+                      >
+                        Show issues
+                      </button>
                     </div>
                   </div>
                 );

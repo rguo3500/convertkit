@@ -14,6 +14,10 @@ const exceptions = JSON.parse(
   await readFile(join(root, "data/lighthouse-exceptions.json"), "utf8")
 );
 const today = new Date().toISOString().slice(0, 10);
+const reminderPath = join(
+  root,
+  "artifacts/summary/lighthouse-exception-reminders.txt"
+);
 const categories = Object.keys(thresholds);
 
 async function findReports(directory) {
@@ -51,6 +55,27 @@ for (const file of await findReports(inputDir)) {
 }
 
 await mkdir(join(root, "artifacts/summary"), { recursive: true });
+const reminderLines = exceptions
+  .filter(rule => rule.expiresOn)
+  .map(rule => {
+    const days = Math.ceil(
+      (new Date(`${rule.expiresOn}T00:00:00Z`) -
+        new Date(`${today}T00:00:00Z`)) /
+        86400000
+    );
+    return { ...rule, days };
+  })
+  .filter(rule => rule.days <= 30)
+  .map(
+    rule =>
+      `${rule.page} ${rule.metric}: expires ${rule.expiresOn} (${rule.days} days) — ${rule.reason || "review exception"}`
+  );
+await writeFile(
+  reminderPath,
+  reminderLines.length
+    ? `Lighthouse exception expiry reminders\\n${reminderLines.join("\\n")}\\n`
+    : "No Lighthouse exceptions expire within 30 days.\\n"
+);
 if (!reports.length) {
   await writeFile(
     outputPath,

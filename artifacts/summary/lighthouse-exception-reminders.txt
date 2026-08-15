@@ -1,0 +1,1 @@
+No Lighthouse exceptions expire within 30 days.\n

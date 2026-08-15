@@ -100,6 +100,16 @@ describe("format tool interactions", () => {
       target: { value: "meters,kilograms\nbad,zoo\n2,wrong" },
     });
     await user.click(screen.getByRole("checkbox", { name: "kilograms" }));
+    await user.click(
+      screen.getByRole("button", { name: "Show issues for meters" })
+    );
+    expect(
+      (
+        screen.getByRole("combobox", {
+          name: "Filter invalid values by column",
+        }) as HTMLSelectElement
+      ).value
+    ).toBe("meters");
     const columnFilter = screen.getByRole("combobox", {
       name: "Filter invalid values by column",
     });

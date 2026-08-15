@@ -111,6 +111,10 @@ jobs:
               echo ""
               cat artifacts/summary/lighthouse-regression.txt
             fi
+            if [ -f artifacts/summary/lighthouse-exception-reminders.txt ]; then
+              echo ""
+              cat artifacts/summary/lighthouse-exception-reminders.txt
+            fi
           } > artifacts/summary/quality-summary.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports
