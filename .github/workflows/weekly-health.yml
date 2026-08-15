@@ -60,7 +60,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: convertkit-weekly-health-${{ github.run_id }}
-          path: artifacts/weekly-health/health-check.md
+          path: |
+            artifacts/weekly-health/health-check.md
+            artifacts/weekly-health/rum-route-differences.csv
+            artifacts/weekly-health/rum-route-differences.json
           if-no-files-found: error
           retention-days: 90
       - name: Notify health failure in GitHub

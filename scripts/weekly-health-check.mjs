@@ -431,5 +431,31 @@ const lines = [
 ];
 
 await mkdir(dirname(output), { recursive: true });
+const routeExportRows = routeDifferenceRows.map(({ route, deltas }) => ({
+  path: route.path,
+  lcpDelta: deltas.lcp,
+  inpDelta: deltas.inp,
+  clsDelta: deltas.cls,
+}));
+const routeExport = {
+  schemaVersion: 1,
+  generatedAt: new Date().toISOString(),
+  sort: routeSort,
+  minAbsoluteDelta: routeMinDelta,
+  rows: routeExportRows,
+};
+await writeFile(
+  resolve(dirname(output), "rum-route-differences.json"),
+  `${JSON.stringify(routeExport, null, 2)}\n`,
+);
+const csvEscape = value => `"${String(value ?? "").replaceAll('"', '""')}"`;
+const csvRows = [
+  ["route", "lcp_delta", "inp_delta", "cls_delta"],
+  ...routeExportRows.map(row => [row.path, row.lcpDelta, row.inpDelta, row.clsDelta]),
+];
+await writeFile(
+  resolve(dirname(output), "rum-route-differences.csv"),
+  `${csvRows.map(row => row.map(csvEscape).join(",")).join("\n")}\n`,
+);
 await writeFile(output, lines.join("\n"));
 if (overall !== "PASS") process.exitCode = 1;

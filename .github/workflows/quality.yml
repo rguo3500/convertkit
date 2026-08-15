@@ -329,7 +329,7 @@ jobs:
 
       - name: Validate webhook audit schema
         if: always()
-        run: node scripts/validate-webhook-audit.mjs artifacts/summary/webhook-audit.json
+        run: node scripts/validate-webhook-audit.mjs artifacts/summary/webhook-audit.json | tee artifacts/summary/webhook-audit-schema.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports
         if: always()
@@ -367,6 +367,8 @@ jobs:
             const artifactBytes = [...artifactIndex.matchAll(/\| `[^`]+` \| ([0-9]+) \|/g)].reduce((total, match) => total + Number(match[1]), 0);
             const artifactSummary = artifactIndex ? `${artifactRows} files · ${artifactBytes.toLocaleString()} bytes indexed` : 'index unavailable';
             const artifactFiles = fs.existsSync('artifacts') ? fs.readdirSync('artifacts', { recursive: true }) : [];
+            const schemaPath = 'artifacts/summary/webhook-audit-schema.txt';
+            const schemaStatus = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, 'utf8').trim() : 'Schema validation not run';
             const reportCounts = {
               axe: artifactFiles.filter(file => String(file).startsWith('axe/')).length,
               lighthouse: artifactFiles.filter(file => String(file).startsWith('lighthouse/')).length,
@@ -389,7 +391,7 @@ jobs:
               }
             }
             const stepFailureSummary = Object.entries(failuresByStep).map(([step, details]) => `${step}: ${Object.entries(details.categories).map(([category, count]) => `${category} x${count}`).join(', ')}; last ${details.lastSeen || 'unknown'}`).join(' · ') || 'none recorded';
-            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
+            const body = `${marker}\n## ConvertKit quality check ${status}\n\nCommit: ${context.sha.slice(0, 7)}\n\n\`\`\`text\n${summary}\n\`\`\`\n\n- Full run: [workflow details](${runUrl})\n- Download: [quality artifacts](${artifactUrl}) — includes \`artifacts/summary/artifact-index.md\` with file sizes and SHA-256 values\n- Artifact index summary: ${artifactSummary}\n- Report counts: axe ${reportCounts.axe}, Lighthouse ${reportCounts.lighthouse}, summary ${reportCounts.summary}, failures ${reportCounts.failures}\n- Failure types: ${failureCategories}\n- Failure types by workflow step: ${stepFailureSummary}\n- Webhook audit schema: ${schemaStatus}\n- Failure details: [download failure diagnostics](${artifactUrl})\n- Reports artifact: convertkit-quality-reports-${context.runId}\n- Artifact retention: controlled by \`QUALITY_ARTIFACT_RETENTION_DAYS\` (default 30 days)\n- Failure diagnostics are included automatically when a step fails\n\nThis comment is updated on subsequent runs for the same Pull Request.`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,

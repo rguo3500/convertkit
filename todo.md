@@ -23,6 +23,13 @@
 - [x] 编写真实生产域名、VITE_SITE_URL、Sitemap 和搜索引擎提交说明
 - [x] 完成全量验证并保存新 checkpoint
 
+## 新一轮导出与跨浏览器可访问性完善
+- [x] 设计路由差异 CSV/JSON 导出格式
+- [x] 实现差异表导出入口和下载内容
+- [x] 在 PR 评论中展示 failureTrend schema 结果和失败详情链接
+- [x] 增加跨浏览器 Playwright Escape 焦点返回测试
+- [x] 运行全量质量检查并保存 checkpoint
+
 ## 新一轮差异筛选与焦点回归完善
 - [x] 设计路由差异排序和变化幅度筛选模型
 - [x] 实现指标排序与幅度筛选
