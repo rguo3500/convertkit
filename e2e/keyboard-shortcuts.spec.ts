@@ -13,3 +13,16 @@ test("Escape closes shortcut help and returns focus to its trigger", async ({ pa
   await expect(page.getByRole("dialog", { name: /keyboard shortcuts/i })).toBeHidden();
   await expect(trigger).toBeFocused();
 });
+
+test("mobile Safari keeps navigation keyboard reachable", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-safari", "Mobile Safari-only regression");
+  await page.goto("/");
+
+  const menu = page.getByRole("button", { name: /open navigation|打开导航菜单/i });
+  await expect(menu).toBeVisible();
+  await menu.click();
+  await expect(page.getByRole("navigation", { name: /mobile navigation|移动导航/i })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeFocused();
+});

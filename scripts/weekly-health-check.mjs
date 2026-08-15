@@ -437,15 +437,20 @@ const routeExportRows = routeDifferenceRows.map(({ route, deltas }) => ({
   inpDelta: deltas.inp,
   clsDelta: deltas.cls,
 }));
+const safeToken = value => String(value || "all").replace(/[^a-zA-Z0-9.-]+/g, "_");
+const exportStem = `rum-route-differences-${safeToken(rumHistoryPreset || "all")}-${safeToken(rumHistoryStart || "all")}-${safeToken(rumHistoryEnd || "all")}`;
 const routeExport = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
+  preset: rumHistoryPreset || "all",
+  windowStart: rumHistoryStart || null,
+  windowEnd: rumHistoryEnd || null,
   sort: routeSort,
   minAbsoluteDelta: routeMinDelta,
   rows: routeExportRows,
 };
 await writeFile(
-  resolve(dirname(output), "rum-route-differences.json"),
+  resolve(dirname(output), `${exportStem}.json`),
   `${JSON.stringify(routeExport, null, 2)}\n`,
 );
 const csvEscape = value => `"${String(value ?? "").replaceAll('"', '""')}"`;
@@ -454,7 +459,7 @@ const csvRows = [
   ...routeExportRows.map(row => [row.path, row.lcpDelta, row.inpDelta, row.clsDelta]),
 ];
 await writeFile(
-  resolve(dirname(output), "rum-route-differences.csv"),
+  resolve(dirname(output), `${exportStem}.csv`),
   `${csvRows.map(row => row.map(csvEscape).join(",")).join("\n")}\n`,
 );
 await writeFile(output, lines.join("\n"));

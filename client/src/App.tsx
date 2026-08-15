@@ -1,5 +1,5 @@
 /* Signal Workshop: the app shell is a measured instrument frame with a persistent escape route. */
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, Route, Switch, useLocation } from 'wouter';
 import { ArrowRight, Menu, X, Sun, Moon } from 'lucide-react';
 import Home from './pages/Home';
@@ -23,6 +23,18 @@ const navItems = [
 function Header() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
   return <header className="sticky top-0 z-50 border-b border-[#283449] bg-[#111827]/95 text-white backdrop-blur">
     <div className="container flex h-[72px] items-center justify-between gap-6">
       <Link href="/" aria-label="ConvertKit home / ConvertKit 首页" className="flex items-center gap-3" onClick={() => setOpen(false)}>
@@ -35,7 +47,7 @@ function Header() {
       <div className="flex items-center gap-2">
         <button aria-label="Toggle theme / 切换主题" onClick={() => setDark(!dark)} className="hidden h-9 w-9 place-items-center border border-[#334158] text-[#b9c3d5] transition hover:border-[#678cf1] hover:text-white sm:grid">{dark ? <Sun size={16}/> : <Moon size={16}/>}</button>
         <Link href="/converters" aria-label="Open converter / 打开转换器" className="hidden items-center gap-2 bg-[#356ae6] px-4 py-2.5 text-[12px] font-semibold text-white transition hover:bg-[#4779ed] sm:flex">Open converter <ArrowRight size={14}/></Link>
-        <button aria-label="Open navigation / 打开导航菜单" onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center border border-[#334158] md:hidden">{open ? <X size={17}/> : <Menu size={17}/>}</button>
+        <button ref={menuButtonRef} aria-label="Open navigation / 打开导航菜单" onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center border border-[#334158] md:hidden">{open ? <X size={17}/> : <Menu size={17}/>}</button>
       </div>
     </div>
     {open && <div className="border-t border-[#283449] bg-[#111827] px-6 py-5 md:hidden"><nav aria-label="Mobile navigation / 移动导航" className="grid gap-4 text-sm text-[#c8d1df]">{navItems.map(([href,label,localized]) => <Link key={href} href={href} aria-label={`${label} / ${localized}`} onClick={() => setOpen(false)}>{label}</Link>)}</nav></div>}
