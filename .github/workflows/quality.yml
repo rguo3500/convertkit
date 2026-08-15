@@ -347,10 +347,15 @@ jobs:
         if: always()
         run: node scripts/validate-webhook-audit.mjs artifacts/summary/webhook-audit.json | tee artifacts/summary/webhook-audit-schema.txt
 
+      - name: Render webhook audit trend
+        if: always()
+        run: node scripts/render-webhook-audit-report.mjs artifacts/webhook-history.json artifacts/summary
+
       - name: Validate RUM export index
         if: always()
         env:
           RUM_EXPORT_SIGNING_KEY: ${{ secrets.RUM_EXPORT_SIGNING_KEY }}
+          REQUIRE_RUM_EXPORT_SIGNATURE: ${{ vars.REQUIRE_RUM_EXPORT_SIGNATURE || 'false' }}
         run: node scripts/validate-rum-export-index.mjs artifacts/summary/rum-route-export-index.json | tee artifacts/summary/rum-route-export-index-validation.txt
 
       - name: Upload accessibility, Lighthouse, and failure reports

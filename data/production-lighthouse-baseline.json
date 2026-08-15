@@ -1,0 +1,12 @@
+{
+  "siteUrl": "https://lovexiaoyue.cc.cd",
+  "capturedAt": "2026-08-15",
+  "source": "docs/production-lighthouse-baseline.md",
+  "pages": {
+    "/": { "performance": 0.76, "accessibility": 1, "best-practices": 0.81, "seo": 1 },
+    "/meters-to-feet": { "performance": 0.83, "accessibility": 1, "best-practices": 0.81, "seo": 1 },
+    "/format-converters": { "performance": 0.72, "accessibility": 1, "best-practices": 0.81, "seo": 1 },
+    "/bulk-converter": { "performance": 0.74, "accessibility": 1, "best-practices": 0.81, "seo": 1 },
+    "/pricing": { "performance": 0.75, "accessibility": 1, "best-practices": 0.81, "seo": 1 }
+  }
+}

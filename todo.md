@@ -359,3 +359,10 @@
 - [x] 运行类型检查与生产构建
 - [x] 验证首页、SEO 页面、博客、批量转换、Pro 页面和移动端截图
 - [x] 保存新的可交付 checkpoint
+
+
+## 本轮生产运维增强
+- [x] 配置 RUM_EXPORT_SIGNING_KEY 的运维检查与签名状态说明
+- [x] 增加 webhook 审计历史趋势可视化输出
+- [x] 增加生产域名 Lighthouse 与 RUM 基线对比报告
+- [x] 运行全量质量验证并保存 checkpoint

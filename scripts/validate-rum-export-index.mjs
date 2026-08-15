@@ -17,6 +17,11 @@ export function validateRumExportIndex(index, signingKey = "") {
   const expectedManifest = crypto.createHash("sha256").update(canonical).digest("hex");
   if (manifestSha256 !== expectedManifest) throw new Error("RUM export index manifestSha256 mismatch");
 
+  const signatureRequired = process.env.REQUIRE_RUM_EXPORT_SIGNATURE === "true";
+  if (signatureRequired && !signingKey) {
+    throw new Error("RUM export index signature is required but RUM_EXPORT_SIGNING_KEY is not configured");
+  }
+
   if (signingKey) {
     const expectedSignature = crypto.createHmac("sha256", signingKey).update(canonical).digest("base64url");
     if (index.signatureStatus !== "configured" || index.signature !== expectedSignature) {

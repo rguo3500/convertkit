@@ -46,6 +46,18 @@ jobs:
           CLOUDFLARE_RUM_MAX_AGE_DAYS: 8
           CLOUDFLARE_RUM_HISTORY_PRESET: ${{ inputs.rum_history_preset || 'all' }}
         run: pnpm run health:weekly artifacts/weekly-health/health-check.md
+      - name: Run production Lighthouse audit
+        id: production_lighthouse
+        if: always()
+        continue-on-error: true
+        env:
+          PRODUCTION_SITE_URL: https://lovexiaoyue.cc.cd
+        run: pnpm dlx @lhci/cli autorun --config=lighthouserc.production.cjs
+      - name: Compare production Lighthouse with baseline
+        if: always()
+        env:
+          FAIL_ON_PRODUCTION_LIGHTHOUSE_REGRESSION: ${{ vars.FAIL_ON_PRODUCTION_LIGHTHOUSE_REGRESSION || 'false' }}
+        run: node scripts/compare-production-lighthouse.mjs artifacts/weekly-health/production-lighthouse-summary.md
       - name: Publish report to job summary
         if: always()
         shell: bash
@@ -54,6 +66,10 @@ jobs:
             cat artifacts/weekly-health/health-check.md >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Health report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f artifacts/weekly-health/production-lighthouse-summary.md ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            cat artifacts/weekly-health/production-lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Upload weekly health report
         if: always()
@@ -64,7 +80,9 @@ jobs:
             artifacts/weekly-health/health-check.md
             artifacts/weekly-health/rum-route-differences-*.csv
             artifacts/weekly-health/rum-route-differences-*.json
-          if-no-files-found: error
+            artifacts/weekly-health/production-lighthouse-summary.md
+            artifacts/production-lighthouse
+          if-no-files-found: warn
           retention-days: 90
       - name: Notify health failure in GitHub
         if: steps.health.outcome == 'failure'

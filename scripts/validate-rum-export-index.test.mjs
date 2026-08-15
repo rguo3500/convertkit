@@ -46,3 +46,20 @@ test("accepts unsigned index only when signature is explicitly not configured", 
 test("rejects a configured signature with the wrong key", () => {
   assert.throws(() => validateRumExportIndex(signedIndex(), "wrong-key"), /HMAC signature mismatch/);
 });
+
+test("requires the signing key when strict signature mode is enabled", () => {
+  const previous = process.env.REQUIRE_RUM_EXPORT_SIGNATURE;
+  process.env.REQUIRE_RUM_EXPORT_SIGNATURE = "true";
+  try {
+    const unsigned = signedIndex();
+    unsigned.signature = null;
+    unsigned.signatureStatus = "not_configured";
+    assert.throws(
+      () => validateRumExportIndex(unsigned),
+      /signature is required.*not configured/
+    );
+  } finally {
+    if (previous === undefined) delete process.env.REQUIRE_RUM_EXPORT_SIGNATURE;
+    else process.env.REQUIRE_RUM_EXPORT_SIGNATURE = previous;
+  }
+});
