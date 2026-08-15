@@ -45,6 +45,7 @@ export function BulkPage() {
   const [shareLinkPreview, setShareLinkPreview] = useState("");
   const [shareSecondsLeft, setShareSecondsLeft] = useState(0);
   const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
+  const [shortcutAnnouncement, setShortcutAnnouncement] = useState("");
   const [shortcutFirstVisit, setShortcutFirstVisit] = useState(false);
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
@@ -153,8 +154,14 @@ export function BulkPage() {
       `${url.pathname}${url.search}${url.hash}`
     );
   }, [invalidColumn, invalidSort]);
+  const openShortcutHelp = () => {
+    setShortcutFirstVisit(false);
+    setShortcutAnnouncement("Keyboard shortcuts opened. Focus moved to the Close button.");
+    setShortcutHelpOpen(true);
+  };
   const closeShortcutHelp = () => {
     setShortcutHelpOpen(false);
+    setShortcutAnnouncement("Keyboard shortcuts closed. Focus returned to the Keyboard shortcuts button.");
     window.requestAnimationFrame(() => shortcutTriggerRef.current?.focus());
   };
   const closeSharePreview = () => {
@@ -204,10 +211,9 @@ export function BulkPage() {
     const handleShortcutHelp = (event: KeyboardEvent) => {
       if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
         event.preventDefault();
-        setShortcutFirstVisit(false);
-        setShortcutHelpOpen(true);
+        openShortcutHelp();
       }
-      if (event.key === "Escape") closeShortcutHelp();
+      if (event.key === "Escape" && shortcutHelpOpen) closeShortcutHelp();
     };
     window.addEventListener("keydown", handleShortcutHelp);
     return () => window.removeEventListener("keydown", handleShortcutHelp);
@@ -699,10 +705,7 @@ export function BulkPage() {
                 <button
                   ref={shortcutTriggerRef}
                   type="button"
-                  onClick={() => {
-                    setShortcutFirstVisit(false);
-                    setShortcutHelpOpen(true);
-                  }}
+                  onClick={openShortcutHelp}
                   aria-expanded={shortcutHelpOpen}
                   aria-controls="bulk-shortcut-help"
                   className="border border-[#dbe1eb] px-3 py-2 text-[10px] font-semibold text-[#536276] hover:border-[#1d56c9] hover:text-[#1d56c9]"
@@ -746,6 +749,9 @@ export function BulkPage() {
               <p className="mt-1 text-[10px] text-[#647087]">
                 Keyboard shortcut: press Escape to close the share preview.
               </p>
+              <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {shortcutAnnouncement}
+              </div>
               {shortcutHelpOpen && (
                 <div
                   ref={shortcutPanelRef}

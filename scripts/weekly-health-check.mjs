@@ -153,6 +153,22 @@ try {
 } catch {
   trendHistory = [];
 }
+const rumHistoryStart = process.env.CLOUDFLARE_RUM_HISTORY_START_DATE || "";
+const rumHistoryEnd = process.env.CLOUDFLARE_RUM_HISTORY_END_DATE || "";
+const startTime = rumHistoryStart ? Date.parse(`${rumHistoryStart}T00:00:00Z`) : -Infinity;
+const endTime = rumHistoryEnd ? Date.parse(`${rumHistoryEnd}T23:59:59.999Z`) : Infinity;
+const hasValidHistoryRange = Number.isFinite(startTime) && Number.isFinite(endTime) && startTime <= endTime;
+if (hasValidHistoryRange) {
+  trendHistory = trendHistory.filter(item => {
+    const collectedAt = Date.parse(item.collectedAt || "");
+    return Number.isFinite(collectedAt) && collectedAt >= startTime && collectedAt <= endTime;
+  });
+}
+const historyFilterSummary = hasValidHistoryRange
+  ? `History filter: **${rumHistoryStart} → ${rumHistoryEnd} UTC** (${trendHistory.length} snapshots).`
+  : rumHistoryStart || rumHistoryEnd
+    ? "History filter: **ignored** because the configured UTC dates are invalid or reversed."
+    : "History filter: **none** (latest 12 verified snapshots).";
 const metricTone = (metric, value) => {
   if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
   const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
@@ -327,7 +343,8 @@ const lines = [
   "",
   "## RUM trend history",
   "",
-  "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
+        "Recent verified snapshots are retained in `docs/rum-history.json`; no row is added when RUM data is missing or stale.",
+  historyFilterSummary,
   "Status colors: GREEN = fresh and review-ready, AMBER = stale or invalid, NEUTRAL = unavailable. LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are GREEN; higher values are AMBER. Trend direction compares each snapshot with the previous verified snapshot.",
   "",
   ...trendLines,
