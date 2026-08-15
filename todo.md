@@ -422,3 +422,10 @@
 - [x] 复核 Cloudflare robots 规则与外部审核
 - [x] 按条件配置 Lighthouse 严格门禁
 - [x] 执行质量验证并保存 checkpoint
+
+
+## 本轮最终门禁复核
+- [x] 核验签名密钥权限与配置状态
+- [x] 复核生产 robots 规则与外部审核
+- [x] 决定并验证 Lighthouse 门禁策略
+- [x] 执行最终质量检查并保存 checkpoint
