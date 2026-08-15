@@ -390,7 +390,7 @@
 
 
 ## 本轮管理员配置核验
-- [ ] 核对 GitHub Secret/Variable 是否已生效
-- [ ] 运行签名与 quality workflow 回归
-- [ ] 根据 robots 审核结果决定 Lighthouse 严格阻断
-- [ ] 执行最终验证并保存 checkpoint
+- [x] 核对 GitHub Secret/Variable 是否已生效
+- [x] 运行签名与 quality workflow 回归
+- [x] 根据 robots 审核结果决定 Lighthouse 严格阻断
+- [x] 执行最终验证并保存 checkpoint
