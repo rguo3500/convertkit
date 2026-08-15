@@ -146,7 +146,9 @@ describe("format tool interactions", () => {
     expect(writeText).toHaveBeenCalledWith(
       expect.stringContaining("issuesSort=row-desc")
     );
-    expect(screen.getByText("Link copied")).toBeTruthy();
+    expect(
+      screen.getByText(/Link copied\. Preview hides in 5 seconds\./)
+    ).toBeTruthy();
     expect(screen.getByText(/issuesSort=row-desc/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close preview" }));
     expect(screen.queryByText(/issuesSort=row-desc/)).toBeNull();

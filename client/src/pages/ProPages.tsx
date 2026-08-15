@@ -43,6 +43,7 @@ export function BulkPage() {
     "idle" | "copied" | "error"
   >("idle");
   const [shareLinkPreview, setShareLinkPreview] = useState("");
+  const [shareSecondsLeft, setShareSecondsLeft] = useState(0);
   const [invalidSort, setInvalidSort] = useState<InvalidSort>(() => {
     if (typeof window === "undefined") return "row-asc";
     const value = new URLSearchParams(window.location.search).get("issuesSort");
@@ -146,12 +147,14 @@ export function BulkPage() {
   const closeSharePreview = () => {
     setShareCopyState("idle");
     setShareLinkPreview("");
+    setShareSecondsLeft(0);
   };
   const copyShareLink = async () => {
     try {
       const shareUrl = window.location.href;
       await navigator.clipboard.writeText(shareUrl);
       setShareLinkPreview(shareUrl);
+      setShareSecondsLeft(5);
       setShareCopyState("copied");
     } catch {
       setShareCopyState("error");
@@ -163,9 +166,13 @@ export function BulkPage() {
       if (event.key === "Escape") closeSharePreview();
     };
     window.addEventListener("keydown", handleKeyDown);
+    const interval = window.setInterval(() => {
+      setShareSecondsLeft(seconds => Math.max(seconds - 1, 0));
+    }, 1000);
     const timer = window.setTimeout(closeSharePreview, 5000);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.clearInterval(interval);
       window.clearTimeout(timer);
     };
   }, [shareCopyState]);
@@ -639,7 +646,7 @@ export function BulkPage() {
                 </button>
                 <span className="text-[10px] text-[#647087]" aria-live="polite">
                   {shareCopyState === "copied"
-                    ? "Link copied"
+                    ? `Link copied. Preview hides in ${shareSecondsLeft} seconds.`
                     : shareCopyState === "error"
                       ? "Copy unavailable"
                       : ""}

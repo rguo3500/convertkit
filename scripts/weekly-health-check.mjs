@@ -170,18 +170,24 @@ const trendLines = trendHistory.length
       "```",
     ]
   : ["No verified RUM snapshots are available yet."];
+const metricTone = (metric, value) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "NEUTRAL";
+  const threshold = metric === "LCP" ? 2500 : metric === "INP" ? 200 : 0.1;
+  return value <= threshold ? "GREEN" : "AMBER";
+};
 const mobileTrendHistory = trendHistory.slice(-3);
 const mobileTrendLines = mobileTrendHistory.length
   ? [
       "### Mobile summary",
       "",
       "Metrics are ordered by review priority: **LCP P75 → INP P75 → CLS**.",
+      "Thresholds: LCP ≤ 2500 ms, INP ≤ 200 ms, CLS ≤ 0.1 are **GREEN**; values above the good threshold are **AMBER**; missing values are **NEUTRAL**.",
       "",
       "| # | LCP | INP | CLS | Status |",
       "| ---: | ---: | ---: | ---: | --- |",
       ...mobileTrendHistory.map(
         (item, index) =>
-          `| ${index + 1} | ${item.lcpP75Ms ?? "n/a"} ms | ${item.inpP75Ms ?? "n/a"} ms | ${item.clsP75 ?? "n/a"} | ${item.status || "n/a"} |`
+          `| ${index + 1} | ${item.lcpP75Ms ?? "n/a"} ms · ${metricTone("LCP", item.lcpP75Ms)} | ${item.inpP75Ms ?? "n/a"} ms · ${metricTone("INP", item.inpP75Ms)} | ${item.clsP75 ?? "n/a"} · ${metricTone("CLS", item.clsP75)} | ${item.status || "n/a"} |`
       ),
     ]
   : ["### Mobile summary", "", "No verified snapshots available."];

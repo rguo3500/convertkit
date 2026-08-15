@@ -114,6 +114,7 @@ jobs:
                 const changeMessage = `Lighthouse exception owner changed: ${previousOwner ? `@${previousOwner}` : 'unassigned'} → @${assignee} at ${new Date().toISOString()}.`;
                 await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber, body: changeMessage });
                 let webhookStatus = process.env.TEAM_ALERT_WEBHOOK_URL ? 'pending' : 'not configured';
+                let webhookFailureCategory = 'none';
                 let maxAttempts = 0;
                 let backoffCapMs = 0;
                 if (process.env.TEAM_ALERT_WEBHOOK_URL) {
@@ -133,7 +134,13 @@ jobs:
                     } catch (error) {
                       if (attempt === maxAttempts - 1) {
                         webhookStatus = 'failed';
-                        console.warn(`Team webhook delivery failed after ${maxAttempts} attempts: ${error instanceof Error ? error.message : 'unknown error'}`);
+                        const safeError = error instanceof Error ? error.message : 'unknown error';
+                        webhookFailureCategory = /^HTTP 4/.test(safeError)
+                          ? 'HTTP_4XX'
+                          : /^HTTP 5/.test(safeError)
+                            ? 'HTTP_5XX'
+                            : 'NETWORK_OR_TIMEOUT';
+                        console.warn(`Team webhook delivery failed after ${maxAttempts} attempts [${webhookFailureCategory}]`);
                       } else {
                         await new Promise(resolve => setTimeout(resolve, Math.min(2 ** attempt * 1000, backoffCapMs)));
                       }
@@ -145,6 +152,7 @@ jobs:
                   .addTable([
                     [{ data: 'Field', header: true }, { data: 'Value', header: true }],
                     ['Status', webhookStatus],
+                    ['Failure category', webhookFailureCategory],
                     ['Max attempts', maxAttempts ? String(maxAttempts) : 'n/a'],
                     ['Backoff cap', backoffCapMs ? `${backoffCapMs} ms` : 'n/a'],
                   ])
