@@ -429,3 +429,10 @@
 - [x] 复核生产 robots 规则与外部审核
 - [x] 决定并验证 Lighthouse 门禁策略
 - [x] 执行最终质量检查并保存 checkpoint
+
+
+## 本轮质量输出复核
+- [x] 复核 webhook 趋势 Job Summary 与 artifact 输出
+- [x] 复核签名状态与 robots 门禁开关
+- [x] 执行完整 quality 与前端回归
+- [x] 保存 checkpoint
