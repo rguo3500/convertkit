@@ -443,3 +443,17 @@
 - [x] 复核签名严格模式与 robots 开关
 - [x] 执行质量回归并检查外部门禁结果
 - [x] 保存 checkpoint
+
+
+## 最后一次生产级审核
+- [ ] 审计 GitHub Actions 与敏感配置
+- [ ] 审计 Webhook、RUM 签名与历史记录链路
+- [ ] 审计 robots、Lighthouse、测试与文档一致性
+- [ ] 汇总问题并给出修复优先级
+
+
+## pnpm 10 配置修复
+- [x] 确认 pnpm 10 兼容配置格式
+- [x] 迁移 patchedDependencies 与 overrides
+- [x] 同步 lockfile 并验证 frozen install
+- [x] 运行质量测试并保存 checkpoint
