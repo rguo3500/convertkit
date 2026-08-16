@@ -457,3 +457,10 @@
 - [x] 迁移 patchedDependencies 与 overrides
 - [x] 同步 lockfile 并验证 frozen install
 - [x] 运行质量测试并保存 checkpoint
+
+
+## JSX loc 与 Vite 7 peer warning 评估
+- [x] 确认插件用途与当前引用链
+- [x] 核验官方兼容性与替代方案
+- [x] 比较升级与移除后的构建测试结果
+- [x] 给出处理结论与实施建议
