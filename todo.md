@@ -436,3 +436,10 @@
 - [x] 复核签名状态与 robots 门禁开关
 - [x] 执行完整 quality 与前端回归
 - [x] 保存 checkpoint
+
+
+## 本轮 Job Summary 复核
+- [x] 复核 Job Summary 与 webhook artifact
+- [x] 复核签名严格模式与 robots 开关
+- [x] 执行质量回归并检查外部门禁结果
+- [x] 保存 checkpoint
