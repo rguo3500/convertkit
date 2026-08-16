@@ -13,6 +13,16 @@ const BulkPage = lazy(() => import('./pages/ProPages').then(module => ({ default
 const PricingPage = lazy(() => import('./pages/ProPages').then(module => ({ default: module.PricingPage })));
 import { conversionSlugs } from './data/conversionRegistry';
 
+// Signal Workshop: the brand mark is inline SVG so Cloudflare deployments do not depend on Manus storage paths.
+function ConvertKitMark({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 36 36" role="img" aria-label="ConvertKit mark" xmlns="http://www.w3.org/2000/svg">
+    <rect width="36" height="36" fill="#356ae6" />
+    <path d="M9 8h12v3H12v6h7v3h-7v8H9V8Z" fill="#fff" />
+    <path d="M23 8h4v20h-4V8Z" fill="#9bb7ff" />
+    <path d="M27 12h2v16h-2V12Z" fill="#fff" opacity=".8" />
+  </svg>;
+}
+
 const navItems = [
   ['/converters', 'Unit converters', '单位转换'],
   ['/format-converters', 'Format tools', '格式工具'],
@@ -38,7 +48,7 @@ function Header() {
   return <header className="sticky top-0 z-50 border-b border-[#283449] bg-[#111827]/95 text-white backdrop-blur">
     <div className="container flex h-[72px] items-center justify-between gap-6">
       <Link href="/" aria-label="ConvertKit home / ConvertKit 首页" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-        <img src="/manus-storage/convertkit-mark_d7d5ec7b.png" alt="ConvertKit mark" className="h-9 w-9 object-contain shadow-[4px_4px_0_#0c1220]" />
+        <ConvertKitMark className="h-9 w-9 shadow-[4px_4px_0_#0c1220]" />
         <span><span className="font-display text-[19px] font-bold tracking-[-.04em]">ConvertKit</span><span className="ml-2 hidden font-mono text-[9px] uppercase tracking-[.18em] text-[#8e9bb2] sm:inline">Tools / 01</span></span>
       </Link>
       <nav aria-label="Primary navigation / 主导航" className="hidden items-center gap-7 text-[13px] font-medium text-[#b9c3d5] md:flex">
@@ -54,7 +64,7 @@ function Header() {
   </header>;
 }
 
-function Footer() { return <footer className="mt-24 border-t border-[#283449] bg-[#111827] py-12 text-[#a6b1c3]"><div className="container grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]"><div><div className="mb-4 flex items-center gap-3 text-white"><img src="/manus-storage/convertkit-mark_d7d5ec7b.png" alt="ConvertKit mark" className="h-8 w-8 object-contain" /><span className="font-display text-lg font-bold">ConvertKit</span></div><p className="max-w-xs text-sm leading-6">Free, precise conversion tools for numbers, data, and formats. Local-first by default.</p><p className="mt-6 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">© 2026 ConvertKit Tools</p></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Explore</p><div className="grid gap-3 text-sm"><Link href="/converters" aria-label="Unit converters / 单位转换">Unit converters</Link><Link href="/format-converters" aria-label="Format tools / 格式工具">Format tools</Link><Link href="/blog" aria-label="Guides / 指南">Guides</Link></div></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Company</p><div className="grid gap-3 text-sm"><Link href="/about" aria-label="About / 关于">About</Link><Link href="/contact" aria-label="Contact / 联系">Contact</Link><Link href="/pricing" aria-label="Pricing / 价格">Pricing</Link></div></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Legal</p><div className="grid gap-3 text-sm"><Link href="/privacy" aria-label="Privacy / 隐私">Privacy</Link><Link href="/terms" aria-label="Terms / 条款">Terms</Link><Link href="/cookie-policy" aria-label="Cookies / Cookie 政策">Cookies</Link></div></div></div></footer> }
+function Footer() { return <footer className="mt-24 border-t border-[#283449] bg-[#111827] py-12 text-[#a6b1c3]"><div className="container grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]"><div><div className="mb-4 flex items-center gap-3 text-white"><ConvertKitMark className="h-8 w-8" /><span className="font-display text-lg font-bold">ConvertKit</span></div><p className="max-w-xs text-sm leading-6">Free, precise conversion tools for numbers, data, and formats. Local-first by default.</p><p className="mt-6 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">© 2026 ConvertKit Tools</p></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Explore</p><div className="grid gap-3 text-sm"><Link href="/converters" aria-label="Unit converters / 单位转换">Unit converters</Link><Link href="/format-converters" aria-label="Format tools / 格式工具">Format tools</Link><Link href="/blog" aria-label="Guides / 指南">Guides</Link></div></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Company</p><div className="grid gap-3 text-sm"><Link href="/about" aria-label="About / 关于">About</Link><Link href="/contact" aria-label="Contact / 联系">Contact</Link><Link href="/pricing" aria-label="Pricing / 价格">Pricing</Link></div></div><div><p className="mb-4 font-mono text-[10px] uppercase tracking-[.16em] text-[#9aa9bf]">Legal</p><div className="grid gap-3 text-sm"><Link href="/privacy" aria-label="Privacy / 隐私">Privacy</Link><Link href="/terms" aria-label="Terms / 条款">Terms</Link><Link href="/cookie-policy" aria-label="Cookies / Cookie 政策">Cookies</Link></div></div></div></footer> }
 
 function Placeholder({ title, eyebrow = 'ConvertKit' }: { title: string; eyebrow?: string }) { return <main className="container py-20"><p className="font-mono text-[11px] uppercase tracking-[.18em] text-[#1d56c9]">{eyebrow}</p><h1 className="mt-4 font-display text-4xl font-bold tracking-[-.04em] text-[#172033]">{title}</h1><p className="mt-5 max-w-xl text-[#536276]">This section is structured and ready for the next expansion of the ConvertKit toolkit.</p></main> }
 
