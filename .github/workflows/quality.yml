@@ -29,6 +29,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Validate conversion data
         run: pnpm run validate:conversions
+      - name: Validate legal pages
+        run: pnpm run validate:legal-pages
       - name: Run unit tests
         shell: bash
         run: |
