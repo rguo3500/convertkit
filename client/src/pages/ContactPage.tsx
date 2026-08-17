@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 
 const operator = {
-  name: "郭伟",
+  name: "shenlan",
   email: "rguo3500@gmail.com",
   region: "中国",
   address: "河南省平顶山市光明路北段",
