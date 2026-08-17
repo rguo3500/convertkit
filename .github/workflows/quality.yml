@@ -295,6 +295,10 @@ jobs:
               echo ""
               cat artifacts/summary/webhook-audit-trend.md
             fi
+            if [ -f artifacts/summary/adsense-readiness.md ]; then
+              echo ""
+              cat artifacts/summary/adsense-readiness.md
+            fi
             if [ -f artifacts/summary/ops-config-status.md ]; then
               echo ""
               cat artifacts/summary/ops-config-status.md
@@ -370,6 +374,15 @@ jobs:
             echo "Webhook trend report was not generated." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Audit production AdSense readiness
+        if: always()
+        continue-on-error: ${{ vars.FAIL_ON_ADSENSE_READINESS != 'true' }}
+        env:
+          PRODUCTION_SITE_URL: https://lovexiaoyue.cc.cd
+          FAIL_ON_ADSENSE_READINESS: ${{ vars.FAIL_ON_ADSENSE_READINESS || 'false' }}
+        run: |
+          mkdir -p artifacts/summary
+          pnpm run audit:production:adsense | tee artifacts/summary/adsense-readiness.md
       - name: Check operations configuration
         if: always()
         env:
