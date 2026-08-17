@@ -1,5 +1,6 @@
 /* Signal Workshop: advertising is an opt-in layer; disabled ads leave no empty geometry and never load third-party scripts. */
 import { useEffect, useId } from "react";
+import { useOptionalCookieConsent } from "../contexts/CookieConsentContext";
 
 type AdSenseSlotProps = {
   slot: string;
@@ -17,14 +18,22 @@ export default function AdSenseSlot({
   className = "",
 }: AdSenseSlotProps) {
   const elementId = useId().replaceAll(":", "");
+  const consent = useOptionalCookieConsent();
   const enabled =
-    adsenseEnabled && consentReady && Boolean(clientId) && Boolean(slot);
+    adsenseEnabled &&
+    consentReady &&
+    consent?.choice === "granted" &&
+    Boolean(clientId) &&
+    Boolean(slot);
 
   useEffect(() => {
-    if (!enabled) return;
     const existing = document.querySelector<HTMLScriptElement>(
       "script[data-convertkit-adsense]"
     );
+    if (!enabled) {
+      existing?.remove();
+      return;
+    }
     if (existing) return;
     const script = document.createElement("script");
     script.async = true;
@@ -32,6 +41,7 @@ export default function AdSenseSlot({
     script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(clientId)}`;
     script.dataset.convertkitAdsense = "true";
     document.head.appendChild(script);
+    return () => script.remove();
   }, [enabled]);
 
   if (!enabled) return null;

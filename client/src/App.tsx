@@ -27,6 +27,9 @@ const PricingPage = lazy(() =>
 );
 import { conversionSlugs } from "./data/conversionRegistry";
 import { PrivacyPage, CookiePolicyPage, TermsPage } from "./pages/LegalPages";
+import { CookieConsentProvider } from "./contexts/CookieConsentContext";
+import CookieConsentBanner from "./components/CookieConsentBanner";
+import OptionalAnalytics from "./components/OptionalAnalytics";
 
 // Signal Workshop: the brand mark is inline SVG so Cloudflare deployments do not depend on Manus storage paths.
 function ConvertKitMark({ className }: { className?: string }) {
@@ -337,7 +340,8 @@ function RouteSEO() {
 }
 export default function App() {
   return (
-    <>
+    <CookieConsentProvider>
+      <OptionalAnalytics />
       <RouteSEO />
       <Header />
       <Suspense
@@ -404,6 +408,7 @@ export default function App() {
         </Switch>
       </Suspense>
       <Footer />
-    </>
+      <CookieConsentBanner />
+    </CookieConsentProvider>
   );
 }
