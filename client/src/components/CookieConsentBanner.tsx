@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   Check,
+  ExternalLink,
   ShieldCheck,
   SlidersHorizontal,
   X,
@@ -83,8 +84,9 @@ export default function CookieConsentBanner() {
               className="mt-3 max-w-3xl pl-11 text-[13px] leading-6 text-[#b8c4d8] sm:text-sm"
             >
               Necessary technologies keep the tools running. Optional
-              measurement and future advertising wait for your clear choice, and
-              you can change it later.
+              measurement and future advertising may use cookies or local
+              storage; Google and selected advertising partners may process data
+              for ad measurement or personalization only after your choice.
             </p>
             <p className="mt-2 pl-11 text-xs leading-5 text-[#8190a8]">
               Read the{" "}
@@ -100,6 +102,16 @@ export default function CookieConsentBanner() {
                 className="pointer-events-auto font-medium text-[#a9beff] underline decoration-[#526fae] underline-offset-4 transition-colors hover:text-white"
               >
                 Cookie Policy
+              </a>
+              . Google’s data practices are described in the{" "}
+              <a
+                href="https://business.safety.google/privacy/"
+                target="_blank"
+                rel="noreferrer"
+                className="pointer-events-auto font-medium text-[#a9beff] underline decoration-[#526fae] underline-offset-4 transition-colors hover:text-white"
+              >
+                Google Business Data Responsibility
+                <ExternalLink className="ml-1 inline-block" size={11} />
               </a>
               .
             </p>
@@ -180,7 +192,29 @@ export default function CookieConsentBanner() {
                     </div>
                     <p className="mt-2 text-xs leading-5 text-[#8e9db4]">
                       Off unless you allow optional technologies and the
-                      production configuration is ready.
+                      production configuration is ready. The actual Google ATP
+                      list must be selected in AdSense before advertising is
+                      enabled.
+                    </p>
+                    <p className="mt-3 text-xs leading-5 text-[#aebbd0]">
+                      See{" "}
+                      <a
+                        href="https://business.safety.google/privacy/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="pointer-events-auto font-medium text-[#a9beff] underline underline-offset-4"
+                      >
+                        Google’s data responsibility details
+                        <ExternalLink className="ml-1 inline-block" size={11} />
+                      </a>{" "}
+                      and the{" "}
+                      <a
+                        href="/cookie-policy"
+                        className="pointer-events-auto font-medium text-[#a9beff] underline underline-offset-4"
+                      >
+                        Cookie Policy
+                      </a>
+                      .
                     </p>
                   </div>
                 </div>

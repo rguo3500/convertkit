@@ -1,7 +1,7 @@
 # Production AdSense readiness audit
 
-Target: https://3000-i0y4ob8atd5gelqlbvu8a-b842c3df.us4.manus.computer
-Generated: 2026-08-17T09:38:17.771Z
+Target: https://lovexiaoyue.cc.cd
+Generated: 2026-08-17T09:57:07.598Z
 Mode: report-only
 
 | Check | Status | Detail |
@@ -10,10 +10,10 @@ Mode: report-only
 | Fresh visit has no optional Google/analytics request before consent | PASS | none |
 | Home does not expose an AdSense placeholder before consent | PASS | DOM text does not contain ad script markers |
 | /privacy contains the current legal page and operator record | PASS | marker=true; placeholder=false; operator=true |
-| /cookie-policy contains the current legal page and operator record | REVIEW | marker=true; placeholder=false; operator=false |
+| /cookie-policy contains the current legal page and operator record | PASS | marker=true; placeholder=false; operator=true |
 | /terms contains the current legal page and operator record | PASS | marker=true; placeholder=false; operator=true |
 | Contact page contains real support and operator information | PASS | placeholder=false; operator=true |
-| robots.txt is reachable and declares the production sitemap | REVIEW | status=200 |
-| sitemap.xml is reachable and uses the production host | REVIEW | status=200 |
+| robots.txt is reachable and declares the production sitemap | PASS | status=200 |
+| sitemap.xml is reachable and uses the production host | PASS | status=200 |
 
-Result: 3 check(s) need review
+Result: all checks passed

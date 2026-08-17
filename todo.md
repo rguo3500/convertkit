@@ -625,3 +625,23 @@
 - [x] 保存整改版本并交付剩余外部事项
 
 > 生产 Cloudflare 发布、Google ATP/CMP/Privacy & Messaging、真实 AdSense client/slot ID 和最终 Network 验收仍需站点管理员完成。
+
+
+## Google ATP/CMP 配置检查
+- [x] 收集 Google 官方 ATP/CMP 与 Privacy & Messaging 要求
+- [x] 核对 ConvertKit 当前 Cookie 同意与 AdSense 实现
+- [x] 对照 EEA/英国/瑞士同意信号和供应商披露缺口
+- [x] 生成后台配置清单与风险结论
+- [x] 交付 ATP/CMP 配置审计结果
+
+> 当前自建横幅已完成基础拒绝/允许/撤回门控，但 Google Certified CMP、Privacy & Messaging 欧洲法规消息、真实 ATP、TCF v2.3/Consent Mode 信号和供应商隐私链接仍需后台配置。
+
+
+## Google CMP 集成就绪弹窗
+- [x] 审计现有 Cookie 同意架构与 Google 接入边界
+- [x] 设计第一层披露、供应商和同意状态模型
+- [x] 实现 CMP 集成就绪弹窗、供应商入口和撤回机制
+- [x] 验证同意状态、广告门控、响应式和可访问性
+- [x] 保存实现版本并交付 Google 后台配置步骤
+
+> 当前代码是 Google Privacy & Messaging/CMP 集成就绪方案，不是 Google Certified CMP；真实 ATP、TCF v2.3/Consent Mode 和 Privacy & Messaging 发布配置仍需 AdSense 后台完成。
