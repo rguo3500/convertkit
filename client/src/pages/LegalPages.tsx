@@ -269,9 +269,10 @@ export function CookiePolicyPage() {
           >
             {operator.email}
           </a>
-          . ConvertKit currently focuses on browser-local conversion and does
-          not intentionally serve Google AdSense ads. No advertising cookie
-          should be enabled merely because this policy exists. If analytics,
+          . The operator's mailing address is {operator.address}. ConvertKit
+          currently focuses on browser-local conversion and does not
+          intentionally serve Google AdSense ads. No advertising cookie should
+          be enabled merely because this policy exists. If analytics,
           advertising, or a consent platform is added, the production
           implementation and this page must be updated before the new service is
           enabled.

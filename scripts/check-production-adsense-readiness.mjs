@@ -70,13 +70,38 @@ try {
     const placeholder = text.includes(
       "This section is structured and ready for the next expansion"
     );
+    const operatorReady =
+      text.includes("shenlan") &&
+      text.includes("rguo3500@gmail.com") &&
+      text.includes("河南省平顶山市光明路北段");
     record(
-      `${path} contains the current legal page`,
-      text.includes(marker) && !placeholder,
-      `marker=${text.includes(marker)}; placeholder=${placeholder}`
+      `${path} contains the current legal page and operator record`,
+      text.includes(marker) && !placeholder && operatorReady,
+      `marker=${text.includes(marker)}; placeholder=${placeholder}; operator=${operatorReady}`
     );
     await legalPage.close();
   }
+
+  const contactPage = await context.newPage();
+  await contactPage.goto(`${site}/contact?adsense-readiness=1`, {
+    waitUntil: "commit",
+    timeout: 30_000,
+  });
+  await contactPage.waitForTimeout(500);
+  const contactText = await contactPage.locator("body").innerText();
+  const contactPlaceholder =
+    contactText.includes("This section is structured and ready") ||
+    contactText.includes("Talk to the team");
+  const contactOperatorReady =
+    contactText.includes("shenlan") &&
+    contactText.includes("rguo3500@gmail.com") &&
+    contactText.includes("河南省平顶山市光明路北段");
+  record(
+    "Contact page contains real support and operator information",
+    !contactPlaceholder && contactOperatorReady,
+    `placeholder=${contactPlaceholder}; operator=${contactOperatorReady}`
+  );
+  await contactPage.close();
 
   const robots = await context.request.get(`${site}/robots.txt`);
   const robotsText = await robots.text();

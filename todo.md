@@ -607,3 +607,21 @@
 - [x] 适配 Cookie 横幅与移动端布局
 - [x] 验证交互、可访问性与视觉回归
 - [x] 保存版本并交付使用说明
+
+
+## Google AdSense 上线复审
+- [x] 整理现有 AdSense 证据与审计范围
+- [x] 检查法律页面、隐私同意和广告代码门控
+- [x] 检查 SEO、内容质量和生产可访问性
+- [x] 汇总通过项、风险项和外部待办
+- [x] 交付 AdSense 复审报告
+
+
+## AdSense 复审逐条整改
+- [x] 核对本地最新代码与生产差异
+- [x] 完善法律页面与 Contact 生产内容
+- [x] 强化 AdSense 生产审计和配置门禁
+- [x] 运行完整验证并复核生产证据
+- [x] 保存整改版本并交付剩余外部事项
+
+> 生产 Cloudflare 发布、Google ATP/CMP/Privacy & Messaging、真实 AdSense client/slot ID 和最终 Network 验收仍需站点管理员完成。

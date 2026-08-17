@@ -11,16 +11,18 @@
 |    2 | 用户明确同意           | 已完成                            | 是                         | 保留 Cookie Consent Banner，默认 unknown，支持 granted/denied                      | 首访显示 Banner；拒绝不加载可选脚本                      |
 |    3 | 撤回授权               | 已完成                            | 是                         | 保留 Privacy choices，撤回后清理动态脚本                                           | granted → denied 后不再产生后续可选脚本                  |
 |    4 | AdSense 广告位         | 已完成                            | 是                         | 首页与转换详情页使用 `AdSenseSlot`，未启用返回 null                                | 未启用时无空白占位、不遮挡转换控件                       |
-|    5 | 隐私法律页面           | 本地已完成，生产未完成            | 代码可完成，发布需外部操作 | 发布最新 `LegalPages.tsx` 版本                                                     | 生产 `/privacy` 显示真实正文，不是 Placeholder           |
-|    6 | Cookie Policy          | 本地已完成，生产未完成            | 代码可完成，发布需外部操作 | 发布最新 Cookie Policy                                                             | 生产 `/cookie-policy` 显示 Cookie 分类、广告和撤回说明   |
-|    7 | Terms of Use           | 本地已完成，生产未完成            | 代码可完成，发布需外部操作 | 发布最新 Terms                                                                     | 生产 `/terms` 显示真实条款和运营者信息                   |
-|    8 | 运营者信息             | 未完成                            | 不能安全代填               | 由站点所有者提供法定名称、联系地址和隐私邮箱                                       | 法律页面不再使用占位运营者信息                           |
+|    5 | 隐私法律页面         | 本地已完成，生产未同步            | 代码可完成，发布需外部操作 | 发布最新 `LegalPages.tsx` 版本                                                     | 生产 `/privacy` 显示真实正文、shenlan 和联系方式        |
+
+|    6 | Cookie Policy          | 本地已完成，生产未同步            | 代码可完成，发布需外部操作 | 发布最新 Cookie Policy                                                             | 生产页显示运营者信息、Cookie 分类、广告和撤回说明       |
+|    7 | Terms of Use           | 本地已完成，生产未同步            | 代码可完成，发布需外部操作 | 发布最新 Terms                                                                     | 生产 `/terms` 显示真实条款和运营者信息                   |
+|    8 | 运营者信息             | 本地已完成，生产待发布              | 不能安全代填               | 由站点所有者确认并发布 shenlan、通信地址和隐私邮箱                                 | 生产法律页和 Contact 页显示真实运营者信息                |
 |    9 | Google ATP/供应商清单  | 未完成                            | 不能代替管理员选择         | 在 AdSense 后台确定实际广告技术供应商并同步隐私披露                                | 同意界面、Cookie Policy、AdSense 设置三者一致            |
 |   10 | CMP/同意信号           | 自建 UI 已完成，Google 信号未确认 | 需外部平台配置与政策确认   | 选择 Google CMP、合规第三方 CMP，或由专业人士确认自建方案；配置 EEA/UK/CH 同意信号 | 目标地区用户可拒绝、允许、撤回，广告请求符合所选方案     |
 |   11 | AdSense client ID      | 未配置/无法确认                   | 不能代填                   | 管理员从 AdSense 后台取得真实 `ca-pub-...` ID                                      | 生产构建使用真实值，不含占位值                           |
 |   12 | Ad slot IDs            | 未配置/无法确认                   | 不能代填                   | 管理员创建首页和转换页 slot，并提供 ID                                             | 每个广告位对应真实 slot，页面不混用位置                  |
 |   13 | GitHub Secret/Variable | API 403                           | 不能绕过权限               | 仓库管理员手动配置或修复 connector 权限                                            | `gh secret/variable list` 可由管理员确认名称，不能公开值 |
-|   14 | Cloudflare 发布        | 生产仍为旧 Placeholder            | 不能在当前权限下代替发布   | 在 Cloudflare Pages 发布包含最新提交的版本                                         | 生产三页和首页资源哈希切换，Banner 可见                  |
+|    14 | Cloudflare 发布        | 生产仍为旧版本，待重新发布          | 不能在当前权限下代替发布   | 在 Cloudflare Pages 发布包含最新提交的版本                                         | 生产 Contact/法律页和首页资源切换，Banner 可见          |
+
 |   15 | robots/sitemap         | 基础检查通过                      | 是/外部审核                | 保持生产 Sitemap、Allow root、Disallow admin；审核 Cloudflare Managed content      | HTTP 200，正确 content-type，Sitemap 主机一致            |
 |   16 | 生产 Network 验证      | 尚未完成                          | 发布后可完成               | 用 unknown/denied/granted/withdrawn 四种状态检查请求                               | 状态矩阵与广告脚本请求符合预期                           |
 |   17 | 流量与广告行为         | 需持续运营                        | 不能自动保证               | 禁止自点、诱导点击、购买低质量流量和误导性广告位                                   | 持续监控 AdSense Policy Center 与流量质量                |

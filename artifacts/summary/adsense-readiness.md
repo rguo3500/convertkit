@@ -1,18 +1,19 @@
 # Production AdSense readiness audit
 
-Target: https://lovexiaoyue.cc.cd
-Generated: 2026-08-17T07:15:27.100Z
+Target: https://3000-i0y4ob8atd5gelqlbvu8a-b842c3df.us4.manus.computer
+Generated: 2026-08-17T09:38:17.771Z
 Mode: report-only
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| Home renders Cookie Consent Banner for a fresh context | REVIEW | banner=false; rejectButtons=0 |
+| Home renders Cookie Consent Banner for a fresh context | PASS | banner=true; rejectButtons=1 |
 | Fresh visit has no optional Google/analytics request before consent | PASS | none |
 | Home does not expose an AdSense placeholder before consent | PASS | DOM text does not contain ad script markers |
-| /privacy contains the current legal page | REVIEW | marker=false; placeholder=true |
-| /cookie-policy contains the current legal page | REVIEW | marker=false; placeholder=true |
-| /terms contains the current legal page | REVIEW | marker=false; placeholder=true |
-| robots.txt is reachable and declares the production sitemap | PASS | status=200 |
-| sitemap.xml is reachable and uses the production host | PASS | status=200 |
+| /privacy contains the current legal page and operator record | PASS | marker=true; placeholder=false; operator=true |
+| /cookie-policy contains the current legal page and operator record | REVIEW | marker=true; placeholder=false; operator=false |
+| /terms contains the current legal page and operator record | PASS | marker=true; placeholder=false; operator=true |
+| Contact page contains real support and operator information | PASS | placeholder=false; operator=true |
+| robots.txt is reachable and declares the production sitemap | REVIEW | status=200 |
+| sitemap.xml is reachable and uses the production host | REVIEW | status=200 |
 
-Result: 4 check(s) need review
+Result: 3 check(s) need review

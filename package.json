@@ -17,7 +17,7 @@
     "audit": "pnpm dlx @lhci/cli autorun",
     "audit:production": "PRODUCTION_SITE_URL=https://lovexiaoyue.cc.cd pnpm dlx @lhci/cli autorun --config=lighthouserc.production.cjs && node scripts/compare-production-lighthouse.mjs",
     "audit:robots": "PRODUCTION_SITE_URL=https://lovexiaoyue.cc.cd node scripts/check-production-robots.mjs",
-    "audit:production:adsense": "PRODUCTION_SITE_URL=https://lovexiaoyue.cc.cd node scripts/check-production-adsense-readiness.mjs",
+    "audit:production:adsense": "node scripts/check-production-adsense-readiness.mjs",
     "validate:legal-pages": "node scripts/validate-legal-pages.mjs",
     "ops:check": "node scripts/check-ops-config.mjs",
     "audit:summary": "node scripts/summarize-lighthouse.mjs",
