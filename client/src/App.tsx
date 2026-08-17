@@ -31,6 +31,7 @@ import ContactPage from "./pages/ContactPage";
 import { CookieConsentProvider } from "./contexts/CookieConsentContext";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import OptionalAnalytics from "./components/OptionalAnalytics";
+import FloatingContact from "./components/FloatingContact";
 
 // Signal Workshop: the brand mark is inline SVG so Cloudflare deployments do not depend on Manus storage paths.
 function ConvertKitMark({ className }: { className?: string }) {
@@ -411,6 +412,7 @@ export default function App() {
         </Switch>
       </Suspense>
       <Footer />
+      <FloatingContact />
       <CookieConsentBanner />
     </CookieConsentProvider>
   );
