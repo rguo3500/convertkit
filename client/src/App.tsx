@@ -27,6 +27,7 @@ const PricingPage = lazy(() =>
 );
 import { conversionSlugs } from "./data/conversionRegistry";
 import { PrivacyPage, CookiePolicyPage, TermsPage } from "./pages/LegalPages";
+import ContactPage from "./pages/ContactPage";
 import { CookieConsentProvider } from "./contexts/CookieConsentContext";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import OptionalAnalytics from "./components/OptionalAnalytics";
@@ -322,6 +323,11 @@ function RouteSEO() {
       description:
         "Review the terms, limitations, permitted use, and availability conditions for ConvertKit tools.",
     },
+    "/contact": {
+      title: "Contact ConvertKit | Privacy and Support",
+      description:
+        "Contact ConvertKit for privacy requests, data rights, advertising questions, corrections, and product support.",
+    },
   };
   const current = meta[location] ?? {
     title: `${location.split("/").pop()?.replaceAll("-", " ")} | ConvertKit`,
@@ -392,10 +398,7 @@ export default function App() {
             path="/about"
             component={() => <Placeholder title="Built for useful answers" />}
           />
-          <Route
-            path="/contact"
-            component={() => <Placeholder title="Talk to the team" />}
-          />
+          <Route path="/contact" component={ContactPage} />
           <Route path="/privacy" component={PrivacyPage} />
           <Route path="/terms" component={TermsPage} />
           <Route path="/cookie-policy" component={CookiePolicyPage} />

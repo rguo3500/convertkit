@@ -14,11 +14,6 @@ const browser = await chromium.launch({ headless: true });
 try {
   const context = await browser.newContext();
   const page = await context.newPage();
-  await page.goto(`${site}/?adsense-readiness=1`, {
-    waitUntil: "networkidle",
-    timeout: 45_000,
-  });
-  const homeText = await page.locator("body").innerText();
   const optionalRequests = [];
   page.on("request", request => {
     if (
@@ -29,6 +24,12 @@ try {
       optionalRequests.push(request.url());
     }
   });
+  await page.goto(`${site}/?adsense-readiness=1`, {
+    waitUntil: "commit",
+    timeout: 30_000,
+  });
+  await page.waitForTimeout(900);
+  const homeText = await page.locator("body").innerText();
   const bannerVisible = await page
     .getByRole("heading", { name: /Keep ConvertKit useful/i })
     .isVisible()
@@ -41,7 +42,7 @@ try {
     bannerVisible && consentButtons > 0,
     `banner=${bannerVisible}; rejectButtons=${consentButtons}`
   );
-  await page.waitForTimeout(800);
+
   record(
     "Fresh visit has no optional Google/analytics request before consent",
     optionalRequests.length === 0,
@@ -61,9 +62,10 @@ try {
   ]) {
     const legalPage = await context.newPage();
     await legalPage.goto(`${site}${path}?adsense-readiness=1`, {
-      waitUntil: "networkidle",
-      timeout: 45_000,
+      waitUntil: "commit",
+      timeout: 30_000,
     });
+    await legalPage.waitForTimeout(500);
     const text = await legalPage.locator("body").innerText();
     const placeholder = text.includes(
       "This section is structured and ready for the next expansion"

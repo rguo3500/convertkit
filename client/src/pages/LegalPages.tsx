@@ -3,6 +3,13 @@ import { Link } from "wouter";
 
 const updated = "August 17, 2026";
 
+const operator = {
+  name: "郭伟",
+  email: "rguo3500@gmail.com",
+  region: "中国",
+  address: "河南省平顶山市光明路北段",
+};
+
 function LegalLayout({
   eyebrow,
   title,
@@ -84,18 +91,25 @@ export function PrivacyPage() {
     >
       <Section title="1. Who operates this service">
         <p>
-          ConvertKit is the operator of the ConvertKit website and browser-local
-          unit and format conversion tools. For privacy questions, data
-          requests, or reports about this policy, please use the{" "}
+          The ConvertKit website and browser-local unit and format conversion
+          tools are operated by{" "}
+          <strong className="text-[#172033]">{operator.name}</strong>, located
+          in {operator.region}. For privacy questions, data requests, or reports
+          about this policy, email{" "}
           <Link
             href="/contact"
             className="font-semibold text-[#1d56c9] underline underline-offset-4"
           >
             Contact page
-          </Link>
-          . Before applying for an advertising account, the operator's legal
-          name and a monitored privacy contact channel should be added here if
-          they differ from the ConvertKit brand.
+          </Link>{" "}
+          or write to{" "}
+          <a
+            href={`mailto:${operator.email}`}
+            className="font-semibold text-[#1d56c9] underline underline-offset-4"
+          >
+            {operator.email}
+          </a>
+          . The operator's mailing address is {operator.address}.
         </p>
       </Section>
       <Section title="2. Information processed by ConvertKit">
@@ -170,8 +184,11 @@ export function PrivacyPage() {
         <p>
           Because advertising is not currently enabled, this page does not
           pretend that an advertising consent signal is already being collected.
-          The consent interface and provider list must be live and tested before
-          AdSense is activated.
+          The operator currently intends to serve users globally, including the
+          EEA, the United Kingdom, and Switzerland, and may use personalized ads
+          in the future. Before that happens, a Google Privacy & Messaging setup
+          or an appropriate Google-certified CMP must be live, the provider list
+          must be accurate, and the consent signals must be tested.
         </p>
       </Section>
       <Section title="6. Sharing and service providers">
@@ -243,9 +260,18 @@ export function CookiePolicyPage() {
     >
       <Section title="1. Current status">
         <p>
-          ConvertKit currently focuses on browser-local conversion and does not
-          intentionally serve Google AdSense ads. No advertising cookie should
-          be enabled merely because this policy exists. If analytics,
+          This Cookie Policy applies to the service operated by{" "}
+          <strong className="text-[#172033]">{operator.name}</strong> in{" "}
+          {operator.region}. Privacy questions can be sent to{" "}
+          <a
+            href={`mailto:${operator.email}`}
+            className="font-semibold text-[#1d56c9] underline underline-offset-4"
+          >
+            {operator.email}
+          </a>
+          . ConvertKit currently focuses on browser-local conversion and does
+          not intentionally serve Google AdSense ads. No advertising cookie
+          should be enabled merely because this policy exists. If analytics,
           advertising, or a consent platform is added, the production
           implementation and this page must be updated before the new service is
           enabled.
@@ -272,7 +298,9 @@ export function CookiePolicyPage() {
           purposes, retention, and consent behavior have been reviewed. If
           Google AdSense is enabled, the live page will identify Google and
           selected advertising technology providers and link to their
-          information.
+          information. The planned global/EEA advertising rollout must not begin
+          until the applicable Google Privacy & Messaging or certified CMP
+          configuration and consent signals are live.
         </p>
       </Section>
       <Section title="3. Managing choices">
@@ -286,10 +314,12 @@ export function CookiePolicyPage() {
       </Section>
       <Section title="4. Third-party providers">
         <p>
-          The actual provider list is configuration-dependent. It must include
-          the live hosting, analytics, consent, and advertising providers rather
-          than a generic list copied from a template. Provider privacy notices
-          should be linked from the consent interface or this page.
+          The current advertising provider list is empty because Google AdSense
+          is not intentionally served at the time of this update. The production
+          provider list must be updated before activation to include the live
+          hosting, analytics, consent, and advertising providers rather than a
+          generic list copied from a template. Provider privacy notices should
+          be linked from the consent interface or this page.
         </p>
       </Section>
       <Section title="5. Updates">
@@ -338,6 +368,7 @@ export function TermsPage() {
       </Section>
       <Section title="4. Availability and changes">
         <p>
+          These terms apply to the service operated by {operator.name}.
           ConvertKit may change, suspend, or discontinue a tool, page, or
           feature to maintain security, reliability, or compliance. We may
           correct errors and update formulas or documentation when necessary.
@@ -368,9 +399,17 @@ export function TermsPage() {
             className="font-semibold text-[#1d56c9] underline underline-offset-4"
           >
             Contact page
-          </Link>
-          . Material changes will be reflected by updating the Last updated date
-          on this page.
+          </Link>{" "}
+          or by emailing{" "}
+          <a
+            href={`mailto:${operator.email}`}
+            className="font-semibold text-[#1d56c9] underline underline-offset-4"
+          >
+            {operator.email}
+          </a>
+          . The operator's mailing address is {operator.address}. Material
+          changes will be reflected by updating the Last updated date on this
+          page.
         </p>
       </Section>
     </LegalLayout>
