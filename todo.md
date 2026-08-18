@@ -645,3 +645,32 @@
 - [x] 保存实现版本并交付 Google 后台配置步骤
 
 > 当前代码是 Google Privacy & Messaging/CMP 集成就绪方案，不是 Google Certified CMP；真实 ATP、TCF v2.3/Consent Mode 和 Privacy & Messaging 发布配置仍需 AdSense 后台完成。
+
+
+## Google AdSense 再次复审
+- [x] 建立最新版本与生产部署基线
+- [x] 复核 CMP 披露、法律页面和广告门控
+- [x] 执行生产请求与 SEO 可访问性审计
+- [x] 核对 ATP、Privacy & Messaging 和 Consent Mode 外部缺口
+- [x] 交付复审结论和下一步放行条件
+
+> 最新生产审计全部通过；Google Certified CMP/Privacy & Messaging 发布消息、真实 ATP、TCF v2.3 或 Consent Mode、真实 client/slot ID 和授权后 Network 验收仍需 AdSense 后台完成。
+
+
+## Google Certified CMP 获取与配置
+- [x] 查阅 Google 官方认证 CMP 规则与名单
+- [x] 区分 Google Privacy & Messaging 与第三方 CMP 路线
+- [x] 制定 ConvertKit 的后台和网站接入步骤
+- [x] 输出认证 CMP 获取指南与放行检查表
+
+> 推荐优先使用 AdSense 内置 Google Privacy & Messaging 欧洲法规消息；第三方必须从 Google 官方 Certified CMP 名单核对；自建 CMP 认证属于供应商级长期路线，不建议作为当前上线捷径。
+
+
+## AdSense 网站所有权验证代码
+- [x] 核对现有 head 与 AdSense 脚本状态
+- [x] 确认验证脚本接入方式与环境门控
+- [x] 实现 head 验证代码并更新部署说明
+- [x] 运行构建和验证代码检查
+- [x] 交付 AdSense 验证和 Cloudflare 发布步骤
+
+> 已加入 `google-adsense-account` 元标记；广告脚本仍由 Cookie 同意和 AdSense 环境变量门控。Cloudflare 发布后，需回 AdSense 点击“我已放置代码”并执行验证。

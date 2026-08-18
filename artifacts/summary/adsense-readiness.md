@@ -1,7 +1,7 @@
 # Production AdSense readiness audit
 
 Target: https://lovexiaoyue.cc.cd
-Generated: 2026-08-17T09:57:07.598Z
+Generated: 2026-08-17T10:09:51.798Z
 Mode: report-only
 
 | Check | Status | Detail |
