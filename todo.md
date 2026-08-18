@@ -674,3 +674,10 @@
 - [x] 交付 AdSense 验证和 Cloudflare 发布步骤
 
 > 已加入 `google-adsense-account` 元标记；广告脚本仍由 Cookie 同意和 AdSense 环境变量门控。Cloudflare 发布后，需回 AdSense 点击“我已放置代码”并执行验证。
+
+
+## AdSense 验证版本发布
+- [ ] 核对本地提交与 GitHub main 差异
+- [ ] 同步验证元标记版本到 GitHub
+- [ ] 确认 Cloudflare 自动部署触发条件
+- [ ] 交付 AdSense 验证操作步骤
