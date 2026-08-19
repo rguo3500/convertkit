@@ -677,7 +677,19 @@
 
 
 ## AdSense 验证版本发布
-- [ ] 核对本地提交与 GitHub main 差异
-- [ ] 同步验证元标记版本到 GitHub
-- [ ] 确认 Cloudflare 自动部署触发条件
-- [ ] 交付 AdSense 验证操作步骤
+- [x] 核对本地提交与 GitHub main 差异
+- [x] 同步验证元标记版本到 GitHub
+- [x] 确认 Cloudflare 自动部署触发条件
+- [x] 交付 AdSense 验证操作步骤
+
+> GitHub `main` 当前已更新为 `6f660ce`，包含 AdSense 所有权元标记；Cloudflare 自动部署和 AdSense 后台“验证”仍需等待/操作。
+
+
+## AdSense 审核等待期逐项复核
+- [x] 核对生产部署和 Privacy & Messaging 状态
+- [x] 复核生产页面、法律信息和运营者资料
+- [x] 复核 Cookie 同意、广告脚本和 SEO 文件
+- [x] 汇总通过项、观察项和外部事项
+- [x] 交付等待期复核报告
+
+> 生产复核全部通过；本地审计脚本已改为等待 React 关键内容，修复冷启动时序造成的误报。Google AdSense 审核结果仍需等待后台通知。

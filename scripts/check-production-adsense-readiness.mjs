@@ -25,10 +25,14 @@ try {
     }
   });
   await page.goto(`${site}/?adsense-readiness=1`, {
-    waitUntil: "commit",
+    waitUntil: "domcontentloaded",
     timeout: 30_000,
   });
-  await page.waitForTimeout(900);
+  await page.waitForFunction(
+    () => document.body.innerText.includes("Keep ConvertKit useful"),
+    undefined,
+    { timeout: 15_000 }
+  );
   const homeText = await page.locator("body").innerText();
   const bannerVisible = await page
     .getByRole("heading", { name: /Keep ConvertKit useful/i })
@@ -62,10 +66,14 @@ try {
   ]) {
     const legalPage = await context.newPage();
     await legalPage.goto(`${site}${path}?adsense-readiness=1`, {
-      waitUntil: "commit",
+      waitUntil: "domcontentloaded",
       timeout: 30_000,
     });
-    await legalPage.waitForTimeout(500);
+    await legalPage.waitForFunction(
+      () => document.querySelector("h1")?.textContent?.trim().length > 0,
+      undefined,
+      { timeout: 15_000 }
+    );
     const text = await legalPage.locator("body").innerText();
     const placeholder = text.includes(
       "This section is structured and ready for the next expansion"
@@ -84,10 +92,14 @@ try {
 
   const contactPage = await context.newPage();
   await contactPage.goto(`${site}/contact?adsense-readiness=1`, {
-    waitUntil: "commit",
+    waitUntil: "domcontentloaded",
     timeout: 30_000,
   });
-  await contactPage.waitForTimeout(500);
+  await contactPage.waitForFunction(
+    () => document.querySelector("h1")?.textContent?.trim().length > 0,
+    undefined,
+    { timeout: 15_000 }
+  );
   const contactText = await contactPage.locator("body").innerText();
   const contactPlaceholder =
     contactText.includes("This section is structured and ready") ||
