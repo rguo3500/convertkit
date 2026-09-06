@@ -34,15 +34,42 @@ export default function AdSenseSlot({
       existing?.remove();
       return;
     }
-    if (existing) return;
-    const script = document.createElement("script");
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(clientId)}`;
-    script.dataset.convertkitAdsense = "true";
-    document.head.appendChild(script);
-    return () => script.remove();
-  }, [enabled]);
+    const script = existing ?? document.createElement("script");
+    const adElement = document.getElementById(elementId);
+    const pushAd = () => {
+      if (!adElement || adElement.dataset.adsensePushed === "true") return;
+      const adsbygoogle = (window as Window & { adsbygoogle?: unknown[] })
+        .adsbygoogle;
+      if (!adsbygoogle) return;
+      adsbygoogle.push({});
+      adElement.dataset.adsensePushed = "true";
+    };
+
+    if (!existing) {
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(clientId)}`;
+      script.dataset.convertkitAdsense = "true";
+      script.addEventListener("load", pushAd, { once: true });
+      document.head.appendChild(script);
+    } else if (script.dataset.convertkitAdsenseLoaded === "true") {
+      pushAd();
+    } else {
+      script.addEventListener("load", pushAd, { once: true });
+    }
+
+    const markLoaded = () => {
+      script.dataset.convertkitAdsenseLoaded = "true";
+      pushAd();
+    };
+    script.addEventListener("load", markLoaded, { once: true });
+
+    return () => {
+      script.removeEventListener("load", pushAd);
+      script.removeEventListener("load", markLoaded);
+      script.remove();
+    };
+  }, [enabled, clientId, elementId]);
 
   if (!enabled) return null;
 
